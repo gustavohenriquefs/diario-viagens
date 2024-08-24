@@ -7,6 +7,9 @@ import reportWebVitals from './reportWebVitals';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+document.getElementsByTagName('html')[0]?.classList?.add('bg-steel-blue-100');
+
 root.render(
   <React.StrictMode>
     <App />

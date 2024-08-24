@@ -1,10 +1,14 @@
 import debounce from 'lodash/debounce';
 import { useState } from "react";
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import DatePicker from 'react-datepicker';
+import { CalendarDots } from '@phosphor-icons/react';
 import { Search } from "../../../shared/components/search/search";
 import { Carousel } from '../../../shared/components/carrosel/carrosel';
 import { Button } from '../../../shared/components/buttons/button';
-
-const GEOUSERNAME = process.env.REACT_APP_GEOUSERNAME;
+import "react-datepicker/dist/react-datepicker.css";
 
 interface Option {
   id: number;
@@ -12,6 +16,8 @@ interface Option {
   lat: number;
   lng: number;
 }
+
+const GEOUSERNAME = process.env.REACT_APP_GEOUSERNAME;
 
 export interface GeoNamesResponse {
   geonames: GeoName[];
@@ -34,33 +40,28 @@ export interface GeoName {
   toponymName: string;
 }
 
-interface UnsplashImage {
-  id: string;
-  description: string | null;
-  alt_description: string | null;
-  urls: {
-    raw: string;
-    full: string;
-    regular: string;
-    small: string;
-    thumb: string;
-  };
-  user: {
-    name: string;
-    portfolio_url: string;
-  };
+
+interface TravelDiaryFormInputs {
+  destination: string;
+  date: Date | null;
+  note: string;
 }
 
-// change interface or remove
-interface UnsplashSearchResponse {
-  total: number;
-  total_pages: number;
-  results: UnsplashImage[];
-}
+// Definindo o esquema de validação com zod
+const schema = z.object({
+  destination: z.string().min(1, { message: "Destino é obrigatório" }),
+  date: z.date().nullable().refine((value) => value !== null, {
+    message: "Data é obrigatória",
+  }),
+  note: z.string().min(5, { message: "Nota deve ter no mínimo 5 caracteres" }),
+});
 
 export const CreateTravelDiary = () => {
   const [options, setOptions] = useState<Option[] | undefined>();
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
+
+  const { register, handleSubmit, control, formState: { errors } } = useForm<TravelDiaryFormInputs>({
+    resolver: zodResolver(schema),
+  });
 
   const searchDestination = async (query: string): Promise<GeoName[] | undefined> => {
     const endpoint = `http://api.geonames.org/searchJSON?q=${query}&maxRows=25&username=${GEOUSERNAME}`;
@@ -85,58 +86,81 @@ export const CreateTravelDiary = () => {
     }));
 
     setOptions(newOptions);
-
-    return query;
   };
-
-  const handleCreateTravel = () => {
-    // user data
-
-    // submit user data
-  }
-
-
-  // nice
-  const handleSelectedOption = async (option?: Option): Promise<void> => {
-    if (!option) return;
-
-    const minLat = option.lat - 0.05;
-    const maxLat = option.lat + 0.05;
-    const minLng = option.lng - 0.05;
-    const maxLng = option.lng + 0.05;
-
-    // const endpoint = `https://www.mapillary.com/connect?client_id=8585315564836512`;
-
-    // try {
-    //   const response = await fetch(endpoint, { method: 'POST' });
-    //   const data: UnsplashSearchResponse = await response.json();
-    //   const imageUrls = data.results.map(imageData => {
-    //     return imageData.urls.full;
-    //   });
-
-    //   setImageUrls(imageUrls);
-    // } catch (error) {
-    //   console.error('Error fetching images:', error);
-    // }
-  }
 
   const debounceSearch = debounce(handleDestinationChange, 200);
 
+  const handleCreateTravel = (data: TravelDiaryFormInputs) => {
+    console.log(data);
+  };
+
   return (
     <>
+      <form onSubmit={handleSubmit(handleCreateTravel)} className="w-full m-auto mt-16 max-w-lg">
+        <div className="flex flex-wrap -mx-3 mb-6">
+          <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-destination">
+              Destino
+            </label>
+            <Controller
+              name="destination"
+              control={control}
+              render={({ field }) => (
+                <Search
+                  onInput={(e) => debounceSearch(e.currentTarget.value)}
+                  options={options}
+                  setSelectedOption={(option) => field.onChange(option?.name)}
+                  onSelect={(option) => field.onChange(option)}
+                />
+              )}
+            />
+            {errors.destination && <p className="text-red-500 text-xs italic">{errors.destination.message}</p>}
+          </div>
 
-      <Search
-        onInput={(e) => debounceSearch(e.currentTarget.value)}
-        setSelectedOption={handleSelectedOption}
-        options={options}
-      />
+          <div className="w-full md:w-1/2 px-3">
+            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-date">
+              Data
+            </label>
+            <div className="relative max-w-sm">
+              <CalendarDots
+                className="absolute m-auto z-10 inset-y-0 start-0 flex items-center pl-3 pointer-events-none"
+                size={32}
+              />
+              <Controller
+                name="date"
+                control={control}
+                render={({ field }) => (
+                  <DatePicker
+                    selected={field.value}
+                    onChange={(date: Date | null) => field.onChange(date)}
+                    className="appearance-none block w-full bg-gray-50 text-gray-700 border border-gray-200 rounded py-2 px-4 py-3 px-4 pl-10 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                    placeholderText="Select date"
+                    dateFormat="dd/MM/yyyy"
+                  />
+                )}
+              />
+              {errors.date && <p className="text-red-500 text-xs italic">{errors.date.message}</p>}
+            </div>
+          </div>
+        </div>
 
-
-      <Button onClick={handleCreateTravel} label={'Criar'} />
-
-      <div className='m-8'>
-        <Carousel imageUrls={imageUrls} />
-      </div>
+        <div className="flex flex-wrap -mx-3 mb-6">
+          <div className="w-full px-3">
+            <label htmlFor="note" className="block mb-2 text-sm font-medium text-gray-900">
+              Notas
+            </label>
+            <textarea
+              id="note"
+              {...register("note")}
+              rows={4}
+              className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Escreva suas notas de viagem"
+            ></textarea>
+            {errors.note && <p className="text-red-500 text-xs italic">{errors.note.message}</p>}
+          </div>
+        </div>
+        <Button type="submit" label={'Criar'} />
+      </form>
     </>
   );
 };

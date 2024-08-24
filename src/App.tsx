@@ -3,10 +3,8 @@ import { CreateTravelDiary } from './pages/travel-diary/create-travel-diary/crea
 
 function App() {
   return (
-    <div className="h-100 bg-steel-blue-100">
-      <header className="App-header">
-        <CreateTravelDiary />
-      </header>
+    <div className="h-full">
+      <CreateTravelDiary />
     </div>
   );
 }

@@ -1,10 +1,11 @@
-import { InputHTMLAttributes, useState } from 'react';
+import { MapPin } from '@phosphor-icons/react';
+import { InputHTMLAttributes, useEffect, useRef, useState } from 'react';
 
 interface Option {
   id: number;
   name: string;
-  lat: number,
-  lng: number
+  lat: number;
+  lng: number;
 }
 
 interface SearchProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -13,65 +14,83 @@ interface SearchProps extends InputHTMLAttributes<HTMLInputElement> {
   setSelectedOption: (option?: Option) => void;
 }
 
-export const Search = ({ options, setSelectedOption = (option?: Option) => { }, ...props }: SearchProps) => {
+export const Search = ({ options, setSelectedOption = () => { }, ...props }: SearchProps) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [value, setValue] = useState('');
+  const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const handleSelectOption = (option: Option) => {
     setSelectedOption(option);
     setValue(option.name);
     setShowDropdown(false);
-  }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
+    setShowDropdown(true);
   };
 
-  return (
-    <div className="relative max-w-sm mx-auto">
-      <label htmlFor="search" className="sr-only">Search</label>
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (options && options.length > 0) {
+      if (e.key === 'ArrowDown') {
+        setHighlightedIndex((prev) =>
+          prev === null || prev === options.length - 1 ? 0 : prev + 1
+        );
+      } else if (e.key === 'ArrowUp') {
+        setHighlightedIndex((prev) =>
+          prev === null || prev === 0 ? options.length - 1 : prev - 1
+        );
+      } else if (e.key === 'Enter' && highlightedIndex !== null) {
+        handleSelectOption(options[highlightedIndex]);
+      }
+    }
+  };
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+      setShowDropdown(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <div className="relative w-100" ref={wrapperRef}>
+      <label htmlFor="search" className="sr-only">Search</label>
       <div className="relative">
         <input
           type="text"
           id="search"
-          className="border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          className="appearance-none pr-8 block w-full bg-gray-50 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
           placeholder="Search branch name..."
           onFocus={() => setShowDropdown(true)}
           value={value}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          autoComplete='off'
           required
           {...props}
         />
-        <button
-          type="submit"
+        <div
           className="absolute inset-y-0 right-0 flex items-center pr-3"
         >
-          <svg
-            className="w-4 h-4"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 20 20"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-            />
-          </svg>
-          <span className="sr-only">Search</span>
-        </button>
+          <MapPin size={20} />
+        </div>
       </div>
       {showDropdown && (
-        <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto dark:border-gray-600">
+        <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-auto dark:border-gray-600">
           {(options && options.length > 0) ? (
-            options.map(option => (
+            options.map((option, index) => (
               <li
                 key={option.id}
-                className="p-2 cursor-pointer bg-steel-blue-50 hover:bg-steel-blue-100"
+                className={`p-2 cursor-pointer ${highlightedIndex === index ? 'bg-steel-blue-100' : 'bg-steel-blue-50'
+                  }`}
                 onClick={() => handleSelectOption(option)}
               >
                 {option.name}
