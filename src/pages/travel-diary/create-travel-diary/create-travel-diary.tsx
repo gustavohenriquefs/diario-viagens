@@ -7,7 +7,7 @@ import DatePicker from 'react-datepicker';
 import { CalendarDots } from '@phosphor-icons/react';
 import { Search } from "../../../shared/components/search/search";
 import { Carousel } from '../../../shared/components/carrosel/carrosel';
-import { Button } from '../../../shared/components/buttons/button';
+import { ButtonPrimary } from '../../../shared/components/buttons/button-primary';
 import "react-datepicker/dist/react-datepicker.css";
 
 interface Option {
@@ -99,7 +99,7 @@ export const CreateTravelDiary = () => {
       <form onSubmit={handleSubmit(handleCreateTravel)} className="w-full m-auto mt-16 max-w-lg">
         <div className="flex flex-wrap -mx-3 mb-6">
           <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-destination">
+            <label className="block tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-destination">
               Destino
             </label>
             <Controller
@@ -114,14 +114,19 @@ export const CreateTravelDiary = () => {
                 />
               )}
             />
-            {errors.destination && <p className="text-red-500 text-xs italic">{errors.destination.message}</p>}
+            {
+              errors.destination &&
+              <p className="text-red-500 text-xs italic">
+                {errors.destination.message}
+              </p>
+            }
           </div>
 
           <div className="w-full md:w-1/2 px-3">
-            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-date">
+            <label className="block tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-date">
               Data
             </label>
-            <div className="relative max-w-sm">
+            <div className="relative w-full">
               <CalendarDots
                 className="absolute m-auto z-10 inset-y-0 start-0 flex items-center pl-3 pointer-events-none"
                 size={32}
@@ -131,15 +136,21 @@ export const CreateTravelDiary = () => {
                 control={control}
                 render={({ field }) => (
                   <DatePicker
+                    calendarClassName='w-100 block'
                     selected={field.value}
                     onChange={(date: Date | null) => field.onChange(date)}
-                    className="appearance-none block w-full bg-gray-50 text-gray-700 border border-gray-200 rounded py-2 px-4 py-3 px-4 pl-10 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                    className="w-full bg-gray-50 text-gray-700 border border-gray-200 rounded px-3 py-2 pl-10 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     placeholderText="Select date"
                     dateFormat="dd/MM/yyyy"
                   />
                 )}
               />
-              {errors.date && <p className="text-red-500 text-xs italic">{errors.date.message}</p>}
+              {
+                errors.date &&
+                <p className="text-red-500 text-xs italic">
+                  {errors.date.message}
+                </p>
+              }
             </div>
           </div>
         </div>
@@ -153,13 +164,18 @@ export const CreateTravelDiary = () => {
               id="note"
               {...register("note")}
               rows={4}
-              className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+              className="block px-3 py-2 w-full text-sm text-gray-900 bg-gray-50 rounded border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Escreva suas notas de viagem"
             ></textarea>
-            {errors.note && <p className="text-red-500 text-xs italic">{errors.note.message}</p>}
+            {
+              errors.note &&
+              <p className="text-red-500 text-xs italic">
+                {errors.note.message}
+              </p>
+            }
           </div>
         </div>
-        <Button type="submit" label={'Criar'} />
+        <ButtonPrimary type="submit" label={'Criar'} />
       </form>
     </>
   );
