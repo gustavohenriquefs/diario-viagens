@@ -9,6 +9,7 @@ import { Search } from "../../../shared/components/search/search";
 import { Carousel } from '../../../shared/components/carrosel/carrosel';
 import { ButtonPrimary } from '../../../shared/components/buttons/button-primary';
 import "react-datepicker/dist/react-datepicker.css";
+import { UploadFile } from '../../../shared/components/upload-file/upload-file';
 
 interface Option {
   id: number;
@@ -97,6 +98,14 @@ export const CreateTravelDiary = () => {
   return (
     <>
       <form onSubmit={handleSubmit(handleCreateTravel)} className="w-full m-auto mt-16 max-w-lg">
+        
+        <div className="flex flex-wrap -mx-3 mb-6">
+          <label htmlFor='fotos'>
+            Fotos
+          </label>
+          <UploadFile />
+        </div>
+
         <div className="flex flex-wrap -mx-3 mb-6">
           <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
             <label className="block tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-destination">
