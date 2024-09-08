@@ -1,15 +1,20 @@
 import ReactDOM from 'react-dom/client';
-import { RouterProvider } from 'react-router';
+import { Navigate, RouterProvider } from 'react-router';
 import { createBrowserRouter } from 'react-router-dom';
 import './index.css';
-import { Login } from './pages/login/login';
 import reportWebVitals from './reportWebVitals';
 import { Home } from './pages/home/home';
+import { Login } from './pages/login/login';
+import { SignUp } from './pages/sign-up/sign-up';
+import ProtectedRoute from './contexts/protected-route.context';
+import { AuthProvider } from './contexts/auth.context';
 
 const router = createBrowserRouter([
-  { path: '/', element: <Home /> },
-  { path: 'login', element: <Login /> }
-])
+  { path: 'home', element: <ProtectedRoute> <Home /> </ProtectedRoute> },
+  { path: 'login', element: <Login /> },
+  { path: 'sign-up', element: <SignUp /> },
+  { path: '*', element: <Navigate to="/home" /> }
+]);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -18,7 +23,9 @@ const root = ReactDOM.createRoot(
 document.getElementsByTagName('html')[0]?.classList?.add('bg-steel-blue-100');
 
 root.render(
-  <RouterProvider router={router} />
+  <AuthProvider>
+    <RouterProvider router={router} />
+  </AuthProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
