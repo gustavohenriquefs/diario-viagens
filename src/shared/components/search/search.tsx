@@ -1,17 +1,11 @@
 import { MapPin } from '@phosphor-icons/react';
 import { InputHTMLAttributes, useEffect, useRef, useState } from 'react';
-
-interface Option {
-  id: number;
-  name: string;
-  lat: number;
-  lng: number;
-}
+import { SearchOption } from './interfaces/search-options';
 
 interface SearchProps extends InputHTMLAttributes<HTMLInputElement> {
-  options?: Option[];
+  options?: SearchOption[];
   showDropdown?: boolean;
-  setSelectedOption: (option?: Option) => void;
+  setSelectedOption: (option?: SearchOption) => void;
 }
 
 export const Search = ({ options, setSelectedOption = () => { }, ...props }: SearchProps) => {
@@ -20,7 +14,7 @@ export const Search = ({ options, setSelectedOption = () => { }, ...props }: Sea
   const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const handleSelectOption = (option: Option) => {
+  const handleSelectOption = (option: SearchOption) => {
     setSelectedOption(option);
     setValue(option.name);
     setShowDropdown(false);
