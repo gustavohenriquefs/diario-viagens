@@ -1,13 +1,43 @@
-import { Mosque } from "@phosphor-icons/react";
-import { useNavigate } from "react-router"
-import { ButtonPrimary } from "../../shared/components/buttons/button-primary";
-import { Input } from "../../shared/components/inputs/input";
+import React from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Link, useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase';
+import { Mosque } from '@phosphor-icons/react';
+import { ButtonPrimary } from '../../shared/components/buttons/button-primary';
+import { Input } from '../../shared/components/inputs/input';
 
-export const Login = () => {
+interface LoginInputs {
+  email: string;
+  password: string;
+}
+
+const schema = z.object({
+  email: z.string().email({ message: "Email inválido" }),
+  password: z.string().min(6, { message: "Senha deve ter no mínimo 6 caracteres" }),
+});
+
+export const Login: React.FC = () => {
   const navigate = useNavigate();
 
-  const hadleLoginClick = () => {
-    navigate('/')
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginInputs>({
+    resolver: zodResolver(schema),
+  });
+
+  const handleLogin: SubmitHandler<LoginInputs> = ({ email, password }) => {
+    console.log("jkds", email, password);
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        navigate('/home');
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error(errorCode, errorMessage);
+      });
   }
 
   return (
@@ -19,11 +49,11 @@ export const Login = () => {
           </span>
           <div className="mt-5 space-y-2">
             <h3 className="text-gray-800 text-2xl font-bold sm:text-3xl">Log in to your account</h3>
-            <p className="">Don't have an account? <a href="javascript:void(0)" className="font-medium text-steel-blue-700 hover:text-steel-blue-900">Sign up</a></p>
+            <p className="">Não tem uma conta? <Link to="/sign-up" className="font-medium text-steel-blue-700 hover:text-steel-blue-900">Sign up</Link></p>
           </div>
         </div>
         <div className="bg-white shadow p-4 py-6 space-y-8 sm:p-6 sm:rounded-lg">
-          <div className="flex items-center justify-center">
+          {/* <div className="flex items-center justify-center">
             <button className="flex items-center justify-center px-6 py-2.5 border rounded-lg hover:bg-gray-50 duration-150 active:bg-gray-100">
               <svg className="w-5 h-5" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clipPath="url(#clip0_17_40)">
@@ -43,42 +73,25 @@ export const Login = () => {
           <div className="relative">
             <span className="block w-full h-px bg-gray-300"></span>
             <p className="inline-block w-fit text-sm bg-white px-2 absolute -top-2 inset-x-0 mx-auto">Or continue with</p>
-          </div>
-          <form
-            onSubmit={(e) => e.preventDefault()}
-            className="space-y-5"
-          >
+          </div> */}
+          <form onSubmit={handleSubmit(handleLogin)} className="space-y-5">
             <div>
-              <label className="font-medium">
-                Email
-              </label>
-              <Input
-                type="email"
-                required
-                className="w-full mt-2"
-              />
+              <label htmlFor="email" className="font-medium">Email</label>
+              <Input id="email" type="email" required className="w-full mt-2" {...register('email')} />
+              {errors.email && <p>{errors.email.message}</p>}
             </div>
             <div>
-              <label className="font-medium">
-                Password
-              </label>
-              <Input
-                type="password"
-                required
-                className="w-full mt-2"
-              />
+              <label htmlFor="password" className="font-medium">Password</label>
+              <Input id="password" type="password" required className="w-full mt-2" {...register('password')} />
+              {errors.password && <p>{errors.password.message}</p>}
             </div>
-
-            <ButtonPrimary
-              label="Sign in"
-              onClick={hadleLoginClick}
-            />
+            <ButtonPrimary  label="Sign in" type="submit" />
           </form>
         </div>
-        <div className="text-center">
+        {/* <div className="text-center">
           <a href="javascript:void(0)" className="hover:text-indigo-600">Forgot password?</a>
-        </div>
+        </div> */}
       </div>
     </main>
-  )
-}
+  );
+};
