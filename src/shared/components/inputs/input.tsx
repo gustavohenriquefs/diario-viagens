@@ -1,10 +1,10 @@
-import React, { InputHTMLAttributes } from "react";
+import React from "react";
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
   icon?: React.ReactNode;
 }
 
-export const Input = ({ icon, className, ...props }: InputProps) => {
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(({ icon, className, ...props }, ref) => {
   return (
     <>
       {icon && (
@@ -13,9 +13,12 @@ export const Input = ({ icon, className, ...props }: InputProps) => {
         </div>
       )}
       <input
+        ref={ref}
         className={`${className} px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-steel-blue-700 shadow-sm rounded`}
         {...props}
       />
     </>
-  )
-}
+  );
+});
+
+Input.displayName = 'Input';
