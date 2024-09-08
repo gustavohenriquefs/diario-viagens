@@ -40,6 +40,9 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined }: TravelDiary
 
     try {
       const response = await fetch(endpoint);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
       const data = await response.json();
       return data.geonames;
     } catch (error) {
@@ -48,6 +51,10 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined }: TravelDiary
   };
 
   const handleDestinationChange = async (query: string) => {
+    if (!query) {
+      setOptions([]);
+      return;
+    }
     const destinationsResponse = await searchDestination(query);
 
     const newOptions = destinationsResponse?.map((destination) => ({
@@ -66,92 +73,91 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined }: TravelDiary
     console.log(data);
   };
 
-  return <form onSubmit={handleSubmit(handleCreateTravel)} className="w-full m-auto mt-16 max-w-lg">
-    <div className="flex flex-wrap -mx-3 mb-6">
-      <label htmlFor='fotos'>
-        Fotos
-      </label>
-      <UploadFile />
-    </div>
-
-    <div className="flex flex-wrap -mx-3 mb-6">
-      <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-        <label className="block tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-destination">
-          Destino
+  return (
+    <form onSubmit={handleSubmit(handleCreateTravel)} className="w-full m-auto mt-16 max-w-lg">
+      <div className="flex flex-wrap -mx-3 mb-6">
+        <label htmlFor='fotos' className="block text-gray-700 text-xs font-bold mb-2">
+          Fotos
         </label>
-        <Controller
-          name="destination"
-          control={control}
-          render={({ field }) => (
-            <Search
-              onInput={(e) => debounceSearch(e.currentTarget.value)}
-              options={options}
-              setSelectedOption={(option) => field.onChange(option?.name)}
-              onSelect={(option) => field.onChange(option)}
-            />
-          )}
-        />
-        {
-          errors.destination &&
-          <p className="text-red-500 text-xs italic">
-            {errors.destination.message}
-          </p>
-        }
+        <UploadFile />
       </div>
 
-      <div className="w-full md:w-1/2 px-3">
-        <label className="block tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-date">
-          Data
-        </label>
-        <div className="relative w-full">
-          <CalendarDots
-            className="absolute m-auto z-10 inset-y-0 start-0 flex items-center pl-3 pointer-events-none"
-            size={32}
-          />
+      <div className="flex flex-wrap -mx-3 mb-6">
+        <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+          <label className="block tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-destination">
+            Destino
+          </label>
           <Controller
-            name="date"
+            name="destination"
             control={control}
             render={({ field }) => (
-              <DatePicker
-                calendarClassName='w-100 block'
-                selected={field.value}
-                onChange={(date: Date | null) => field.onChange(date)}
-                className="w-full bg-gray-50 text-gray-700 border border-gray-200 rounded px-3 py-2 pl-10 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                placeholderText="Select date"
-                dateFormat="dd/MM/yyyy"
+              <Search
+                onInput={(e) => debounceSearch(e.currentTarget.value)}
+                options={options}
+                setSelectedOption={(option) => field.onChange(option?.name)}
+                onSelect={(option) => field.onChange(option)}
               />
             )}
           />
-          {
-            errors.date &&
+          {errors.destination && (
             <p className="text-red-500 text-xs italic">
-              {errors.date.message}
+              {errors.destination.message}
             </p>
-          }
+          )}
+        </div>
+
+        <div className="w-full md:w-1/2 px-3">
+          <label className="block tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-date">
+            Data
+          </label>
+          <div className="relative w-full">
+            <CalendarDots
+              className="absolute m-auto z-10 inset-y-0 start-0 flex items-center pl-3 pointer-events-none"
+              size={32}
+            />
+            <Controller
+              name="date"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  calendarClassName='w-100 block'
+                  selected={field.value}
+                  onChange={(date: Date | null) => field.onChange(date)}
+                  className="w-full bg-gray-50 text-gray-700 border border-gray-200 rounded px-3 py-2 pl-10 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                  placeholderText="Select date"
+                  dateFormat="dd/MM/yyyy"
+                />
+              )}
+            />
+            {errors.date && (
+              <p className="text-red-500 text-xs italic">
+                {errors.date.message}
+              </p>
+            )}
+          </div>
         </div>
       </div>
-    </div>
 
-    <div className="flex flex-wrap -mx-3 mb-6">
-      <div className="w-full px-3">
-        <label htmlFor="note" className="block mb-2 text-sm font-medium text-gray-900">
-          Notas
-        </label>
-        <textarea
-          id="note"
-          {...register("note")}
-          rows={4}
-          className="block px-3 py-2 w-full text-sm text-gray-900 bg-gray-50 rounded border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Escreva suas notas de viagem"
-        ></textarea>
-        {
-          errors.note &&
-          <p className="text-red-500 text-xs italic">
-            {errors.note.message}
-          </p>
-        }
+      <div className="flex flex-wrap -mx-3 mb-6">
+        <div className="w-full px-3">
+          <label htmlFor="note" className="block mb-2 text-sm font-medium text-gray-900">
+            Notas
+          </label>
+          <textarea
+            id="note"
+            {...register("note")}
+            rows={4}
+            className="block px-3 py-2 w-full text-sm text-gray-900 bg-gray-50 rounded border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Escreva suas notas de viagem"
+          ></textarea>
+          {errors.note && (
+            <p className="text-red-500 text-xs italic">
+              {errors.note.message}
+            </p>
+          )}
+        </div>
       </div>
-    </div>
-    <ButtonPrimary type="submit" label={'Criar'} />
-  </form>
-}
+      <ButtonPrimary type="submit" label={'Criar'} />
+    </form>
+  );
+};
