@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { ButtonPrimary } from '../../shared/components/buttons/button-primary';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase';
+import { travelDiaryToast } from '../../contexts/message.context';
 
 const schema = z.object({
   name: z.string().min(3, { message: 'Name must have at least 3 characters' }),
@@ -24,18 +25,22 @@ export const SignUp: FC = () => {
     resolver: zodResolver(schema),
   });
 
-  const handleCreateAccount = (data: SignUpFormInputs) => {
+  const { showToast } = travelDiaryToast();
+
+  const handleCreateAccount = async (data: SignUpFormInputs) => {
     console.log(data);
-    
-    createUserWithEmailAndPassword(auth, data.email, data.password)
+
+    await createUserWithEmailAndPassword(auth, data.email, data.password)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log('User created:', user);
+
+        console.log(userCredential);
+
+        showToast('Conta criada com sucesso!', 'success');
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error('Error creating user:', errorCode, errorMessage);
+        console.error(error);
+        showToast('Não foi possível criar conta! Tente novamente mais tarde...', 'error');
       });
   };
 

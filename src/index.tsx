@@ -8,6 +8,9 @@ import { Login } from './pages/login/login';
 import { SignUp } from './pages/sign-up/sign-up';
 import ProtectedRoute from './contexts/protected-route.context';
 import { AuthProvider } from './contexts/auth.context';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { TravelDiaryToastProvider } from './contexts/message.context';
 
 const router = createBrowserRouter([
   { path: 'home', element: <ProtectedRoute> <Home /> </ProtectedRoute> },
@@ -24,7 +27,10 @@ document.getElementsByTagName('html')[0]?.classList?.add('bg-steel-blue-100');
 
 root.render(
   <AuthProvider>
-    <RouterProvider router={router} />
+    <TravelDiaryToastProvider>
+      <RouterProvider router={router} />
+    </TravelDiaryToastProvider>
+    <ToastContainer />
   </AuthProvider>
 );
 

@@ -12,6 +12,10 @@ import { UploadFile } from '../../../shared/components/upload-file/upload-file';
 import { TravelDiaryFormInputs } from './interfaces/TravelDiaryFormInputs';
 import { GeoName } from './interfaces/GeoNames';
 import { SearchOption } from '../search/interfaces/search-options';
+import { addDoc, arrayUnion, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { app, auth, db } from '../../../firebase';
+import { get } from 'lodash';
+import { travelDiaryToast } from '../../../contexts/message.context';
 
 const GEOUSERNAME = process.env.REACT_APP_GEOUSERNAME;
 
@@ -29,8 +33,10 @@ interface TravelDiaryFormProps {
 
 export const TravelDiaryForm = ({ travelDiaryFormData = undefined }: TravelDiaryFormProps) => {
   const [options, setOptions] = useState<SearchOption[] | undefined>();
+  const uid = auth.currentUser?.uid;
+  const { showToast } = travelDiaryToast();
 
-  const { register, handleSubmit, control, formState: { errors } } = useForm<TravelDiaryFormInputs>({
+  const { register, handleSubmit, control, reset, formState: { errors } } = useForm<TravelDiaryFormInputs>({
     defaultValues: travelDiaryFormData,
     resolver: zodResolver(schema),
   });
@@ -69,8 +75,32 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined }: TravelDiary
 
   const debounceSearch = debounce(handleDestinationChange, 200);
 
-  const handleCreateTravel = (data: TravelDiaryFormInputs) => {
-    console.log(data);
+  const resetForm = () => {
+    reset({
+      destination: '',
+      date: null,
+      note: '',
+      createdBy: ''
+    });
+  };
+
+  const handleCreateTravel = async (data: TravelDiaryFormInputs) => {
+    try {
+      const travelDiaryRef = collection(db, 'diarios');
+
+      // Adiciona o diário de viagem com o userId do usuário autenticado
+      await addDoc(travelDiaryRef, {
+        ...data,
+        userId: uid, // Inclui o userId no documento
+        createdAt: new Date(),
+      });
+
+      showToast('Diário de viagem criado com sucesso', 'success');
+
+      resetForm();
+    } catch (error) {
+      showToast('Não foi possível criar o diário de viagem', 'error');
+    }
   };
 
   return (

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -8,6 +8,7 @@ import { auth } from '../../firebase';
 import { Mosque } from '@phosphor-icons/react';
 import { ButtonPrimary } from '../../shared/components/buttons/button-primary';
 import { Input } from '../../shared/components/inputs/input';
+import { useAuth } from '../../contexts/auth.context';
 
 interface LoginInputs {
   email: string;
@@ -21,16 +22,20 @@ const schema = z.object({
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { user, setUser, setToken } = useAuth();
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginInputs>({
     resolver: zodResolver(schema),
   });
 
   const handleLogin: SubmitHandler<LoginInputs> = ({ email, password }) => {
-    console.log("jkds", email, password);
     signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         const user = userCredential.user;
+        const token = await user.getIdToken();
+        setUser(user);
+        setToken(token);
+        localStorage.setItem('token', token);
         navigate('/home');
       })
       .catch((error) => {
@@ -38,7 +43,13 @@ export const Login: React.FC = () => {
         const errorMessage = error.message;
         console.error(errorCode, errorMessage);
       });
-  }
+  };
+
+  useEffect(() => {
+    if (user) {
+      navigate('/home');
+    }
+  }, [navigate, user]);
 
   return (
     <main className="w-full h-screen flex flex-col items-center justify-center bg-gray-50 sm:px-4">
@@ -85,7 +96,7 @@ export const Login: React.FC = () => {
               <Input id="password" type="password" required className="w-full mt-2" {...register('password')} />
               {errors.password && <p>{errors.password.message}</p>}
             </div>
-            <ButtonPrimary  label="Sign in" type="submit" />
+            <ButtonPrimary label="Sign in" type="submit" />
           </form>
         </div>
         {/* <div className="text-center">
