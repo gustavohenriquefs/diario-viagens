@@ -188,6 +188,8 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined }: TravelDiary
         </div>
       </div>
       <ButtonPrimary type="submit" label={'Criar'} />
+      <script src="./node_modules/lodash/lodash.min.js"></script>
+<script src="./node_modules/dropzone/dist/dropzone-min.js"></script>
     </form>
   );
 };
