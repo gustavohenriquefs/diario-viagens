@@ -6,6 +6,15 @@ import { auth } from "../../../firebase";
 export const Sidebar = () => {
   const { isSidebarOpen } = useSidebar();
 
+  const getUserProfilePictureUrl = (username?: string | null) => {
+    const randomPictureUrl = `https://ui-avatars.com/api/?name=${username}&background=random`;
+    return auth.currentUser?.photoURL ?? randomPictureUrl;
+  }
+
+  const username = auth.currentUser?.email;
+  const profilePicture = getUserProfilePictureUrl(username);
+
+
   const navigation = [
     {
       href: 'javascript:void(0)',
@@ -106,10 +115,10 @@ export const Sidebar = () => {
             </ul>
             <div className={`py-4 ${isSidebarOpen ? 'px-4' : 'px-2'} border-t`}>
               <div className={`flex items-center ${isSidebarOpen ? 'gap-x-4' : ''}`}>
-                <img src="https://randomuser.me/api/portraits/women/79.jpg" className="w-12 h-12 rounded-full" />
+                <img src={profilePicture} className="w-12 h-12 rounded-full" />
                 <div>
                   <span className="block text-gray-700 text-sm font-semibold">
-                    {isSidebarOpen ? 'Alivika tony' : ''}
+                    {isSidebarOpen ? username : ''}
                   </span>
                   <a
                     href="javascript:void(0)"

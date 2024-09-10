@@ -20,6 +20,9 @@ module.exports = {
           '950': '#182739',
         },
       },
+      margin: {
+        'home': 'calc(1rem + 52px)',
+      },
     }
   },
   plugins: [

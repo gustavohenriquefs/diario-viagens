@@ -11,9 +11,22 @@ import { AuthProvider } from './contexts/auth.context';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { TravelDiaryToastProvider } from './contexts/message.context';
+import { ListTravelDiary } from './pages/travel-diary/list-travel-diary/list-travel-diary';
 
 const router = createBrowserRouter([
-  { path: 'home', element: <ProtectedRoute> <Home /> </ProtectedRoute> },
+  {
+    path: 'home', element: <ProtectedRoute> <Home /> </ProtectedRoute>,
+    children: [
+      {
+        path: 'diary-travels',
+        element: <ListTravelDiary />
+      },
+      {
+        path: 'diary-travels/:id',
+        element: <div>Edit Diary Travel</div>
+      },
+    ]
+  },
   { path: 'login', element: <Login /> },
   { path: 'sign-up', element: <SignUp /> },
   { path: '*', element: <Navigate to="/home" /> }

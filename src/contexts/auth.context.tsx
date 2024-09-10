@@ -1,4 +1,3 @@
-// src/auth/auth.context.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, onIdTokenChanged, User, getIdToken } from 'firebase/auth';
 import { auth } from '../firebase';
@@ -13,8 +12,8 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps>({
   user: null,
   token: null,
-  setUser: () => {},
-  setToken: () => {},
+  setUser: () => { },
+  setToken: () => { },
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -26,6 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const unsubscribeAuthState = onAuthStateChanged(auth, async (user) => {
       setUser(user);
+
       if (user) {
         const token = await getIdToken(user);
         setToken(token);

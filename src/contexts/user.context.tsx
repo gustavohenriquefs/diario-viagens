@@ -17,7 +17,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     if (user) {
-      // Fetch additional user data if needed
       setUserData(user);
     } else {
       setUserData(null);

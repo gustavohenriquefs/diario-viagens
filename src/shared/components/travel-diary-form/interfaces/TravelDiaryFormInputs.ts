@@ -1,8 +1,8 @@
 export interface TravelDiaryFormInputs {
+  diaryId?: string;
   imagens: File[];
   destination: string;
   date: Date | null;
   note: string;
-  createdBy?: string;
   createAt?: Date;
 }
