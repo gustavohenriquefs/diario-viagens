@@ -12,10 +12,10 @@ import { UploadFile } from '../../../shared/components/upload-file/upload-file';
 import { TravelDiaryFormInputs } from './interfaces/TravelDiaryFormInputs';
 import { GeoName } from './interfaces/GeoNames';
 import { SearchOption } from '../search/interfaces/search-options';
-import { addDoc, arrayUnion, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { app, auth, db } from '../../../firebase';
-import { get } from 'lodash';
+import { addDoc, collection } from 'firebase/firestore';
+import { auth, db } from '../../../firebase';
 import { travelDiaryToast } from '../../../contexts/message.context';
+import { v4 as uuidv4 } from 'uuid';
 
 const GEOUSERNAME = process.env.REACT_APP_GEOUSERNAME;
 
@@ -77,28 +77,27 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined }: TravelDiary
 
   const resetForm = () => {
     reset({
+      diaryId: '',
       destination: '',
       date: null,
       note: '',
-      createdBy: ''
     });
   };
 
   const handleCreateTravel = async (data: TravelDiaryFormInputs) => {
     try {
-      const travelDiaryRef = collection(db, 'diarios');
+      const travelDiaryRef = collection(db, `users/${uid}/diaries`);
+    
+      data.createAt = new Date();
+      data.diaryId = uuidv4();
 
-      // Adiciona o diário de viagem com o userId do usuário autenticado
-      await addDoc(travelDiaryRef, {
-        ...data,
-        userId: uid, // Inclui o userId no documento
-        createdAt: new Date(),
-      });
+      await addDoc(travelDiaryRef, data);
 
       showToast('Diário de viagem criado com sucesso', 'success');
 
       resetForm();
     } catch (error) {
+      console.log(error);
       showToast('Não foi possível criar o diário de viagem', 'error');
     }
   };
