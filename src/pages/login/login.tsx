@@ -1,14 +1,14 @@
-import React, { useEffect } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Link, useNavigate } from 'react-router-dom';
+import { AirplaneTakeoff } from '@phosphor-icons/react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import React, { useEffect } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import { z } from 'zod';
+import { useAuth } from '../../contexts/auth.context';
 import { auth } from '../../firebase';
-import { Mosque } from '@phosphor-icons/react';
 import { ButtonPrimary } from '../../shared/components/buttons/button-primary';
 import { Input } from '../../shared/components/inputs/input';
-import { useAuth } from '../../contexts/auth.context';
 
 interface LoginInputs {
   email: string;
@@ -56,7 +56,7 @@ export const Login: React.FC = () => {
       <div className="w-full space-y-6 text-gray-600 sm:max-w-md">
         <div className="text-center">
           <span className='flex-none flex justify-center text-steel-blue-700'>
-            <Mosque size={64} />
+            <AirplaneTakeoff size={64} />
           </span>
           <div className="mt-5 space-y-2">
             <h3 className="text-gray-800 text-2xl font-bold sm:text-3xl">Log in to your account</h3>
