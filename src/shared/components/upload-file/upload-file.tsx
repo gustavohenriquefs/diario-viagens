@@ -1,27 +1,32 @@
-import { ChangeEvent, useState } from 'react';
-import { ref, uploadBytes } from 'firebase/storage';
+import React, { ChangeEvent, useState, forwardRef } from 'react';
+import { ref as storageRef, uploadBytes } from 'firebase/storage';
 import { storage } from "../../../firebase";
-import { IcUpload } from '../icons/ic-upload';
+import { IcUpload } from '../../icons/ic-upload';
 
 interface UploadFileProps extends React.InputHTMLAttributes<HTMLInputElement> {
   classNameContainer?: string;
+  onFilesChange: (files: File[]) => void;
 }
 
-export const UploadFile = ({ classNameContainer = '', className, ...props }: UploadFileProps) => {
+export const UploadFile = forwardRef<HTMLInputElement, UploadFileProps>(({ classNameContainer = '', className, onFilesChange, ...props }: UploadFileProps, ref) => {
   const [previews, setPreviews] = useState<{ url: string, file: File }[]>([]);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    console.log("recebi: ", event);
     const files = event.target.files;
+    
     if (files) {
-      // Limitar a seleção de arquivos a 2
-      const selectedFiles = Array.from(files).slice(0, 2);
+      // Limitar a seleção de arquivos a 10
+      const selectedFiles = Array.from(files).slice(0, 10);
 
       // Gerar as URLs de prévia e salvar os arquivos no estado
       const newPreviews = selectedFiles.map((file) => ({
         url: URL.createObjectURL(file),
         file,
       }));
+
       setPreviews(newPreviews);
+      onFilesChange(selectedFiles); // Chamar o callback com os arquivos selecionados
     }
   };
 
@@ -33,7 +38,7 @@ export const UploadFile = ({ classNameContainer = '', className, ...props }: Upl
   const handleUpload = async () => {
     if (previews.length > 0) {
       for (const preview of previews) {
-        const fileRef = ref(storage, `uploads/${preview.file.name}`);
+        const fileRef = storageRef(storage, `uploads/${preview.file.name}`);
         try {
           await uploadBytes(fileRef, preview.file);
           console.log('Arquivo upado com sucesso:', preview.file.name);
@@ -80,16 +85,18 @@ export const UploadFile = ({ classNameContainer = '', className, ...props }: Upl
             </div>
           )}
         </div>
+
         <input
           id="dropzone-file"
           type="file"
           className={`${className} hidden`}
           onChange={handleFileChange}
-          {...props}
           multiple
           accept="image/*"
+          ref={ref}
+          {...props}
         />
-      </label>
+      </label>  
     </div>
   );
-};
+});

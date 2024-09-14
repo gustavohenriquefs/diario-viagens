@@ -4,10 +4,11 @@ import { X } from '@phosphor-icons/react';
 
 interface ModalProps {
   isOpen: boolean;
+  content: React.ReactNode;
   onClose: () => void;
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
+export const Modal: React.FC<ModalProps> = ({ isOpen, content, onClose }) => {
   if (!isOpen) return null;
 
   return (
@@ -27,7 +28,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
             <span className="sr-only">Close modal</span>
           </button>
           <div className="p-4 md:p-5 text-center">
-            <Setting />
+            {content}
           </div>
         </div>
       </div>

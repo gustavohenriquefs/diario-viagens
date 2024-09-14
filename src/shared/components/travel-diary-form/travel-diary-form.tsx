@@ -1,39 +1,29 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CalendarDots } from '@phosphor-icons/react';
 import debounce from 'lodash/debounce';
 import { useState } from "react";
-import { useForm, Controller } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import DatePicker from 'react-datepicker';
-import { CalendarDots } from '@phosphor-icons/react';
-import { Search } from "../../../shared/components/search/search";
-import { ButtonPrimary } from '../../../shared/components/buttons/button-primary';
 import "react-datepicker/dist/react-datepicker.css";
-import { UploadFile } from '../../../shared/components/upload-file/upload-file';
-import { TravelDiaryFormInputs } from './interfaces/TravelDiaryFormInputs';
-import { GeoName } from './interfaces/GeoNames';
-import { SearchOption } from '../search/interfaces/search-options';
-import { addDoc, collection } from 'firebase/firestore';
-import { auth, db } from '../../../firebase';
+import { Controller, useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { travelDiaryToast } from '../../../contexts/message.context';
-import { v4 as uuidv4 } from 'uuid';
+import { ButtonPrimary } from '../../../shared/components/buttons/button-primary';
+import { Search } from "../../../shared/components/search/search";
+import { UploadFile } from '../../../shared/components/upload-file/upload-file';
+import { SearchOption } from '../search/interfaces/search-options';
+import { GeoName } from './interfaces/GeoNames';
+import { TravelDiaryFormInputs } from './interfaces/TravelDiaryFormInputs';
 
 const GEOUSERNAME = process.env.REACT_APP_GEOUSERNAME;
 
-const schema = z.object({
-  destination: z.string().min(1, { message: "Destino é obrigatório" }),
-  date: z.date().nullable().refine((value) => value !== null, {
-    message: "Data é obrigatória",
-  }),
-  note: z.string().min(5, { message: "Nota deve ter no mínimo 5 caracteres" }),
-});
-
 interface TravelDiaryFormProps {
   travelDiaryFormData?: TravelDiaryFormInputs;
+  handleSubmitTravelDiary: (data: TravelDiaryFormInputs) => Promise<void>;
+  schema: z.ZodObject<z.ZodRawShape>;
 }
 
-export const TravelDiaryForm = ({ travelDiaryFormData = undefined }: TravelDiaryFormProps) => {
+export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitTravelDiary, schema }: TravelDiaryFormProps) => {
   const [options, setOptions] = useState<SearchOption[] | undefined>();
-  const uid = auth.currentUser?.uid;
   const { showToast } = travelDiaryToast();
 
   const { register, handleSubmit, control, reset, formState: { errors } } = useForm<TravelDiaryFormInputs>({
@@ -52,7 +42,7 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined }: TravelDiary
       const data = await response.json();
       return data.geonames;
     } catch (error) {
-      console.error('Error fetching destinations:', error);
+      showToast('Erro ao buscar destinos', 'error');
     }
   };
 
@@ -73,42 +63,54 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined }: TravelDiary
     setOptions(newOptions);
   };
 
+  const onSubmit = (data: TravelDiaryFormInputs) => {
+    handleSubmitTravelDiary(data).then(() => {
+      reset();
+    });
+  }
+
   const debounceSearch = debounce(handleDestinationChange, 200);
 
-  const resetForm = () => {
-    reset({
-      diaryId: '',
-      destination: '',
-      date: null,
-      note: '',
-    });
-  };
-
-  const handleCreateTravel = async (data: TravelDiaryFormInputs) => {
-    try {
-      const travelDiaryRef = collection(db, `users/${uid}/diaries`);
-    
-      data.createAt = new Date();
-      data.diaryId = uuidv4();
-
-      await addDoc(travelDiaryRef, data);
-
-      showToast('Diário de viagem criado com sucesso', 'success');
-
-      resetForm();
-    } catch (error) {
-      console.log(error);
-      showToast('Não foi possível criar o diário de viagem', 'error');
-    }
-  };
-
   return (
-    <form onSubmit={handleSubmit(handleCreateTravel)} className="w-full m-auto mt-16 max-w-lg">
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full m-auto mt-16 max-w-lg">
+
+      {travelDiaryFormData?.diaryId ? <div className="flex flex-wrap -mx-2 mb-6">
+        <label htmlFor="diaryId" className="block text-gray-700 text-xs font-bold mb-2">
+          ID
+        </label>
+        <input
+          {...register("diaryId")}
+          type="text"
+          id="diaryId"
+          className="block px-3 py-2 w-full text-sm text-gray-900 bg-gray-50 rounded border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+          placeholder="ID"
+          readOnly
+        />
+      </div> : null}
+
       <div className="flex flex-wrap -mx-3 mb-6">
         <label htmlFor='fotos' className="block text-gray-700 text-xs font-bold mb-2">
           Fotos
         </label>
-        <UploadFile />
+
+        <Controller
+          name="images"
+          control={control}
+          defaultValue={[]}
+          render={({ field }) => (
+            <UploadFile
+              onFilesChange={(files) => {
+                field.onChange(files);
+              }}
+            />
+          )}
+        />
+
+        {errors.images && (
+          <p className="text-red-500 text-xs italic">
+            {errors.images.message}
+          </p>
+        )}
       </div>
 
       <div className="flex flex-wrap -mx-3 mb-6">
@@ -188,7 +190,7 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined }: TravelDiary
       </div>
       <ButtonPrimary type="submit" label={'Criar'} />
       <script src="./node_modules/lodash/lodash.min.js"></script>
-<script src="./node_modules/dropzone/dist/dropzone-min.js"></script>
+      <script src="./node_modules/dropzone/dist/dropzone-min.js"></script>
     </form>
   );
 };
