@@ -1,12 +1,12 @@
-import { AirplaneTakeoff, Mosque } from "@phosphor-icons/react/dist/ssr";
-import { useSidebar } from "../../../contexts/sidebar.context";
-import { travelDiaryToast } from "../../../contexts/message.context";
-import { auth } from "../../../firebase";
-import { Link, Navigate } from "react-router-dom";
-import { IcSettings } from "../../icons/ic-settings";
+import { AirplaneTakeoff } from "@phosphor-icons/react/dist/ssr";
 import { useState } from "react";
-import { Modal } from "../modal/modal";
+import { Link, Navigate } from "react-router-dom";
+import { travelDiaryToast } from "../../../contexts/message.context";
+import { useSidebar } from "../../../contexts/sidebar.context";
+import { auth } from "../../../firebase";
 import { Setting } from "../../../settings/settings";
+import { IcSettings } from "../../icons/ic-settings";
+import { Modal } from "../modal/modal";
 
 export const Sidebar = () => {
   const { isSidebarOpen } = useSidebar();
@@ -123,7 +123,7 @@ export const Sidebar = () => {
             <div className={`py-4 ${isSidebarOpen ? 'px-4' : 'px-2'} border-t`}>
               <div className={`flex items-center ${isSidebarOpen ? 'gap-x-4' : ''}`}>
                 <button onClick={handleProfile}>
-                  <img src={profilePicture} className="w-12 h-12 rounded-full" />
+                  <img src={profilePicture} className="w-12 h-12 rounded-full" alt="foto de perfil" />
                 </button>
 
                 <div>

@@ -1,6 +1,5 @@
-import React from 'react';
-import { Setting } from '../../../settings/settings';
 import { X } from '@phosphor-icons/react';
+import React from 'react';
 
 interface ModalProps {
   isOpen: boolean;

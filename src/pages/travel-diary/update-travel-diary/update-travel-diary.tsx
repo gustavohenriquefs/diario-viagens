@@ -1,15 +1,30 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { useParams } from "react-router";
-import { db, storage } from "../../../firebase";
-import { travelDiaryToast } from "../../../contexts/message.context";
-import { TravelDiaryResponse } from "../../../shared/components/travel-diary-form/interfaces/travel-diary-response";
-import { useEffect, useState } from "react";
-import { set } from "lodash";
-import { TravelDiaryForm } from "../../../shared/components/travel-diary-form/travel-diary-form";
-import { TravelDiaryFormInputs } from "../../../shared/components/travel-diary-form/interfaces/TravelDiaryFormInputs";
-import { z } from "zod";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router";
+import { z } from "zod";
 import { useAuth } from "../../../contexts/auth.context";
+import { travelDiaryToast } from "../../../contexts/message.context";
+import { db, storage } from "../../../firebase";
+import { Load } from "../../../shared/components/load/load";
+import { TravelDiaryFormInputs } from "../../../shared/components/travel-diary-form/interfaces/TravelDiaryFormInputs";
+import { TravelDiaryForm } from "../../../shared/components/travel-diary-form/travel-diary-form";
+
+const dateSchema = z.object({
+  start: z.date().refine((value) => value !== null, {
+    message: "Data inicial é obrigatória",
+  }),
+  end: z.date().optional(),
+});
+
+const schema = z.object({
+  diaryId: z.string().optional(),
+  images: z.array(z.any()).min(1, { message: "Imagens são obrigatórias" }).max(10, { message: "Máximo de 10 imagens" }),
+  destination: z.string().min(1, { message: "Destino é obrigatório" }),
+  date: dateSchema.nullable(),
+  note: z.string().min(5, { message: "Nota deve ter no mínimo 5 caracteres" }),
+});
 
 export const UpdateTravelDiary: React.FC = () => {
   const [diary, setDiary] = useState<TravelDiaryFormInputs | undefined>();
@@ -33,7 +48,7 @@ export const UpdateTravelDiary: React.FC = () => {
 
   const getTravelDiaryById = async (diaryId: string) => {
     try {
-      if(!uid) {
+      if (!uid) {
         showToast('Usuário não autenticado', 'error');
         return;
       }
@@ -45,10 +60,13 @@ export const UpdateTravelDiary: React.FC = () => {
         const data = docSnap.data();
         const images = await convertURLsToFiles(data.images);
         const travelDiary: TravelDiaryFormInputs = {
-          diaryId: data.diary,
+          diaryId: diaryId,
           images,
           destination: data.destination,
-          date: data.date,
+          date: {
+            start: data.date.start.toDate(),
+            end: data.date.end.toDate(),
+          },
           note: data.note,
         }
 
@@ -70,22 +88,11 @@ export const UpdateTravelDiary: React.FC = () => {
       return;
     }
 
-
     setLoading(true);
     getTravelDiaryById(diaryId).then(() =>
       setLoading(false)
     );
   }, [diaryId]);
-
-  const schema = z.object({
-    diaryId: z.string().optional(),
-    images: z.array(z.any()).min(1, { message: "Imagens são obrigatórias" }).max(10, { message: "Máximo de 10 imagens" }),
-    destination: z.string().min(1, { message: "Destino é obrigatório" }),
-    date: z.date().nullable().refine((value) => value !== null, {
-      message: "Data é obrigatória",
-    }),
-    note: z.string().min(5, { message: "Nota deve ter no mínimo 5 caracteres" }),
-  });
 
   const uploadImages = async (images: File[], uid: string): Promise<string[]> => {
     const uploadPromises = images.map(async (image) => {
@@ -121,7 +128,7 @@ export const UpdateTravelDiary: React.FC = () => {
     }
 
     try {
-      const travelDiaryRef = doc(db, 'travelDiaries', diaryId);
+      const travelDiaryRef = doc(db, 'users', uid, 'diaries', diaryId);
 
       const urls = await uploadImages(data.images, uid);
 
@@ -133,6 +140,8 @@ export const UpdateTravelDiary: React.FC = () => {
       await setDoc(travelDiaryRef, reqBody, { merge: true });
 
       showToast('Diário de viagem atualizado com sucesso', 'success');
+
+      await getTravelDiaryById(diaryId);
     } catch (error) {
       showToast('Erro ao atualizar diário de viagem', 'error');
     }
@@ -140,8 +149,15 @@ export const UpdateTravelDiary: React.FC = () => {
 
   return (
     <>
-      {diaryId}
-      <TravelDiaryForm travelDiaryFormData={diary} handleSubmitTravelDiary={handleSubmitTravelDiary} schema={schema} />
+      {loading ? (
+        <Load />
+      ) : (
+        <TravelDiaryForm
+          travelDiaryFormData={diary}
+          handleSubmitTravelDiary={handleSubmitTravelDiary}
+          schema={schema}
+        />
+      )}
     </>
   );
 };

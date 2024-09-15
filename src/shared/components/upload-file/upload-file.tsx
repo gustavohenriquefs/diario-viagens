@@ -1,18 +1,16 @@
-import React, { ChangeEvent, useState, forwardRef } from 'react';
-import { ref as storageRef, uploadBytes } from 'firebase/storage';
-import { storage } from "../../../firebase";
+import React, { ChangeEvent, forwardRef, useEffect, useState } from 'react';
 import { IcUpload } from '../../icons/ic-upload';
 
 interface UploadFileProps extends React.InputHTMLAttributes<HTMLInputElement> {
   classNameContainer?: string;
+  files: File[];
   onFilesChange: (files: File[]) => void;
 }
 
-export const UploadFile = forwardRef<HTMLInputElement, UploadFileProps>(({ classNameContainer = '', className, onFilesChange, ...props }: UploadFileProps, ref) => {
+export const UploadFile = forwardRef<HTMLInputElement, UploadFileProps>(({ classNameContainer = '', files, className, onFilesChange, ...props }: UploadFileProps, ref) => {
   const [previews, setPreviews] = useState<{ url: string, file: File }[]>([]);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    console.log("recebi: ", event);
     const files = event.target.files;
     
     if (files) {
@@ -35,19 +33,29 @@ export const UploadFile = forwardRef<HTMLInputElement, UploadFileProps>(({ class
     setPreviews((prevPreviews) => prevPreviews.filter((_, i) => i !== index));
   };
 
-  const handleUpload = async () => {
-    if (previews.length > 0) {
-      for (const preview of previews) {
-        const fileRef = storageRef(storage, `uploads/${preview.file.name}`);
-        try {
-          await uploadBytes(fileRef, preview.file);
-          console.log('Arquivo upado com sucesso:', preview.file.name);
-        } catch (error) {
-          console.error('Erro ao upar o arquivo:', preview.file.name, error);
-        }
-      }
-    }
-  };
+  useEffect(() => {
+    const initialPreviews = files?.map((file) => ({
+      url: URL.createObjectURL(file),
+      file,
+    })) ?? [];
+
+    setPreviews(initialPreviews);
+    console.log('Previews', initialPreviews);
+  }, [files]);
+
+  // const handleUpload = async () => {
+  //   if (previews.length > 0) {
+  //     for (const preview of previews) {
+  //       const fileRef = storageRef(storage, `uploads/${preview.file.name}`);
+  //       try {
+  //         await uploadBytes(fileRef, preview.file);
+  //         console.log('Arquivo upado com sucesso:', preview.file.name);
+  //       } catch (error) {
+  //         console.error('Erro ao upar o arquivo:', preview.file.name, error);
+  //       }
+  //     }
+  //   }
+  // };
 
   return (
     <div className="flex flex-col items-center justify-center w-full space-y-4">
@@ -67,12 +75,11 @@ export const UploadFile = forwardRef<HTMLInputElement, UploadFileProps>(({ class
             </div>
           )}
 
-          {/* Mostrar as prévias das imagens */}
           {previews.length > 0 && (
             <div className="flex space-x-4">
               {previews.map((preview, index) => (
                 <div key={index} className="relative">
-                  <img src={preview.url} alt={`Prévia ${index + 1}`} className="w-32 h-32 object-cover rounded-lg" />
+                  <img src={preview.url} alt={`Foto do local`} className="w-32 h-32 object-cover rounded-lg" />
                   <button
                     type="button"
                     onClick={() => handleRemovePreview(index)}

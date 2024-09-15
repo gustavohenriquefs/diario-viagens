@@ -25,15 +25,16 @@ export const ListTravelDiary = () => {
 
   useEffect(() => {
     getDiaries();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const formatDate = (date: Date | null) => {
-    if (!date) {
-      return '';
-    }
+  // const formatDate = (date: Date | null) => {
+  //   if (!date) {
+  //     return '';
+  //   }
 
-    return new Intl.DateTimeFormat('pt-BR').format(date);
-  }
+  //   return new Intl.DateTimeFormat('pt-BR').format(date);
+  // }
 
   const hasImages = (images: string[]) => {
     return images && images.length > 0;

@@ -1,8 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CalendarDots } from '@phosphor-icons/react';
 import debounce from 'lodash/debounce';
-import { useState } from "react";
-import DatePicker from 'react-datepicker';
+import { useEffect, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -13,6 +11,7 @@ import { UploadFile } from '../../../shared/components/upload-file/upload-file';
 import { SearchOption } from '../search/interfaces/search-options';
 import { GeoName } from './interfaces/GeoNames';
 import { TravelDiaryFormInputs } from './interfaces/TravelDiaryFormInputs';
+import { DateRangeForm } from '../datapicker/datapicker';
 
 const GEOUSERNAME = process.env.REACT_APP_GEOUSERNAME;
 
@@ -26,10 +25,29 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitT
   const [options, setOptions] = useState<SearchOption[] | undefined>();
   const { showToast } = travelDiaryToast();
 
-  const { register, handleSubmit, control, reset, formState: { errors } } = useForm<TravelDiaryFormInputs>({
+  const { register, handleSubmit, setValue, control, reset, formState: { errors } } = useForm<TravelDiaryFormInputs>({
     defaultValues: travelDiaryFormData,
     resolver: zodResolver(schema),
   });
+
+  const convertDateRange = (date: { start: Date | null, end: Date | null }) => {
+    const start = date.start ? new Date(date.start) : null;
+    const end = date.end ? new Date(date.end) : null;
+
+    return { start, end };
+  }
+
+  useEffect(() => {
+    console.log('TravelDiaryForm -> travelDiaryFormData', travelDiaryFormData);
+
+    if (travelDiaryFormData) {
+      setValue('date', convertDateRange(travelDiaryFormData.date));
+      setValue('destination', travelDiaryFormData.destination || '');
+      setValue('note', travelDiaryFormData.note || '');
+      setValue('images', travelDiaryFormData.images || []);
+      setValue('diaryId', travelDiaryFormData.diaryId || '');
+    }
+  }, [travelDiaryFormData, setValue]);
 
   const searchDestination = async (query: string): Promise<GeoName[] | undefined> => {
     const endpoint = `http://api.geonames.org/searchJSON?q=${query}&maxRows=25&username=${GEOUSERNAME}`;
@@ -63,17 +81,20 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitT
     setOptions(newOptions);
   };
 
-  const onSubmit = (data: TravelDiaryFormInputs) => {
-    handleSubmitTravelDiary(data).then(() => {
+  const onSubmit = async (data: TravelDiaryFormInputs) => {
+    await handleSubmitTravelDiary(data).finally(() => {
       reset();
     });
   }
 
   const debounceSearch = debounce(handleDestinationChange, 200);
 
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-full m-auto mt-16 max-w-lg">
+  useEffect(() => {
+    console.log(errors)
+  })
 
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full m-auto mt-16 mb-6 max-w-lg px-2">
       {travelDiaryFormData?.diaryId ? <div className="flex flex-wrap -mx-2 mb-6">
         <label htmlFor="diaryId" className="block text-gray-700 text-xs font-bold mb-2">
           ID
@@ -88,7 +109,7 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitT
         />
       </div> : null}
 
-      <div className="flex flex-wrap -mx-3 mb-6">
+      <div className="flex flex-wrap -mx-3 mb-6 px-4">
         <label htmlFor='fotos' className="block text-gray-700 text-xs font-bold mb-2">
           Fotos
         </label>
@@ -96,9 +117,9 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitT
         <Controller
           name="images"
           control={control}
-          defaultValue={[]}
           render={({ field }) => (
             <UploadFile
+              files={field.value}
               onFilesChange={(files) => {
                 field.onChange(files);
               }}
@@ -114,7 +135,7 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitT
       </div>
 
       <div className="flex flex-wrap -mx-3 mb-6">
-        <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+        <div className="w-full px-3">
           <label className="block tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-destination">
             Destino
           </label>
@@ -123,10 +144,18 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitT
             control={control}
             render={({ field }) => (
               <Search
-                onInput={(e) => debounceSearch(e.currentTarget.value)}
+                onInput={(e) => {
+                  debounceSearch(e.currentTarget.value);
+                  field.onChange(e.currentTarget.value);
+                }}
+                initialValue={field.value}
                 options={options}
-                setSelectedOption={(option) => field.onChange(option?.name)}
-                onSelect={(option) => field.onChange(option)}
+                setSelectedOption={(option) => {
+                  field.onChange(option?.name);
+                }}
+                onSelect={(option) => {
+                  field.onChange(option?.currentTarget.value);
+                }}
               />
             )}
           />
@@ -137,29 +166,14 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitT
           )}
         </div>
 
-        <div className="w-full md:w-1/2 px-3">
-          <label className="block tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-date">
+        <div className='flex flex-wrap px-3 my-2'>
+          <label className="block tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-destination">
             Data
           </label>
           <div className="relative w-full">
-            <CalendarDots
-              className="absolute m-auto z-10 inset-y-0 start-0 flex items-center pl-3 pointer-events-none"
-              size={32}
-            />
-            <Controller
-              name="date"
-              control={control}
-              render={({ field }) => (
-                <DatePicker
-                  calendarClassName='w-100 block'
-                  selected={field.value}
-                  onChange={(date: Date | null) => field.onChange(date)}
-                  className="w-full bg-gray-50 text-gray-700 border border-gray-200 rounded px-3 py-2 pl-10 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                  placeholderText="Select date"
-                  dateFormat="dd/MM/yyyy"
-                />
-              )}
-            />
+
+            <DateRangeForm control={control} />
+
             {errors.date && (
               <p className="text-red-500 text-xs italic">
                 {errors.date.message}
@@ -167,9 +181,7 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitT
             )}
           </div>
         </div>
-      </div>
 
-      <div className="flex flex-wrap -mx-3 mb-6">
         <div className="w-full px-3">
           <label htmlFor="note" className="block mb-2 text-sm font-medium text-gray-900">
             Notas

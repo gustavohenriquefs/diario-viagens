@@ -32,14 +32,14 @@ export const SignUp: FC = () => {
 
     await createUserWithEmailAndPassword(auth, data.email, data.password)
       .then((userCredential) => {
-        const user = userCredential.user;
+        // const user = userCredential.user;
 
-        console.log(userCredential);
+        // console.log(userCredential);
 
         showToast('Conta criada com sucesso!', 'success');
       })
       .catch((error) => {
-        console.error(error);
+        console.error(error, errors);
         showToast('Não foi possível criar conta! Tente novamente mais tarde...', 'error');
       });
   };

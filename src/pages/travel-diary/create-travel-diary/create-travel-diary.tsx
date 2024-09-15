@@ -9,13 +9,18 @@ import { db, storage } from '../../../firebase';
 import { TravelDiaryFormInputs } from "../../../shared/components/travel-diary-form/interfaces/TravelDiaryFormInputs";
 import { TravelDiaryForm } from '../../../shared/components/travel-diary-form/travel-diary-form';
 
+const dateSchema = z.object({
+  start: z.date().refine((value) => value !== null, {
+    message: "Data inicial é obrigatória",
+  }),
+  end: z.date().optional(),
+});
+ 
 const schema = z.object({
   diaryId: z.string().optional(),
   images: z.array(z.any()).min(1, { message: "Imagens são obrigatórias" }).max(10, { message: "Máximo de 10 imagens" }),
   destination: z.string().min(1, { message: "Destino é obrigatório" }),
-  date: z.date().nullable().refine((value) => value !== null, {
-    message: "Data é obrigatória",
-  }),
+  date:  dateSchema.nullable(),
   note: z.string().min(5, { message: "Nota deve ter no mínimo 5 caracteres" }),
 });
 
