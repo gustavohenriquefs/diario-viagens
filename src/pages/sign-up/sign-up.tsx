@@ -28,14 +28,8 @@ export const SignUp: FC = () => {
   const { showToast } = travelDiaryToast();
 
   const handleCreateAccount = async (data: SignUpFormInputs) => {
-    console.log(data);
-
     await createUserWithEmailAndPassword(auth, data.email, data.password)
       .then((userCredential) => {
-        // const user = userCredential.user;
-
-        // console.log(userCredential);
-
         showToast('Conta criada com sucesso!', 'success');
       })
       .catch((error) => {

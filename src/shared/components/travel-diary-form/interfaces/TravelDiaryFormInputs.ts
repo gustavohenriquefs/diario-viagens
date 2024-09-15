@@ -1,5 +1,5 @@
 export interface TravelDiaryFormInputs {
-  diaryId?: string;
+  diaryId: string | null;
   images: File[];
   destination: string;
   date: {

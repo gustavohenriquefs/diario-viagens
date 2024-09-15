@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '../../contexts/auth.context';
 import { travelDiaryToast } from '../../contexts/message.context';
 import { ButtonPrimary } from '../../shared/components/buttons/button-primary';
+import { Input } from '../../shared/components/inputs/input';
 
 interface FormValues {
   currentPassword: string;
@@ -61,10 +62,10 @@ export const ChangePasswordForm: React.FC = () => {
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="newPassword">
               Senha atual
             </label>
-            <input
+            <Input
               id="currentPassword"
               type="password"
-              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.currentPassword ? 'border-red-500' : ''}`}
+              className={`w-full ${errors.currentPassword ? 'border-red-500' : ''}`}
               placeholder="Digite a senha atual"
               {...register('currentPassword', {
                 required: 'Senha atual é obrigatória',
@@ -84,10 +85,10 @@ export const ChangePasswordForm: React.FC = () => {
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="newPassword">
               Nova senha
             </label>
-            <input
+            <Input
               id="newPassword"
               type="password"
-              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.newPassword ? 'border-red-500' : ''}`}
+              className={`w-full ${errors.newPassword ? 'border-red-500' : ''}`}
               placeholder="Digite a nova senha"
               {...register('newPassword', { required: 'Nova senha é obrigatória', minLength: { value: 6, message: 'Password must be at least 6 characters' } })}
             />
@@ -99,10 +100,10 @@ export const ChangePasswordForm: React.FC = () => {
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="confirmPassword">
               Confirmar nova senha
             </label>
-            <input
+            <Input
               id="confirmPassword"
               type="password"
-              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.confirmPassword ? 'border-red-500' : ''}`}
+              className={`w-full ${errors.confirmPassword ? 'border-red-500' : ''}`}
               placeholder="Confirmar nova senha"
               {...register('confirmPassword', {
                 required: 'Por favor, confirme a nova senha',

@@ -8,22 +8,20 @@ import imageLocalDefault from '../../../shared/images/no-image.svg';
 export const ListTravelDiary = () => {
   const [diaries, setDiaries] = useState<TravelDiaryResponse[]>([]);
 
-  const getDiaries = async () => {
-    const id = auth.currentUser?.uid ?? '';
-    const querySnapshot = await getDocs(collection(db, 'users', id, 'diaries'));
-
-    setDiaries(querySnapshot.docs.map(doc => {
-      doc.data() as TravelDiaryResponse
-      return {
-        ...doc.data() as TravelDiaryResponse,
-        diaryId: doc.id as string,
-      }
-    }));
-
-    return diaries;
-  }
-
+  
   useEffect(() => {
+    const getDiaries = async () => {
+      const id = auth.currentUser?.uid ?? '';
+      const querySnapshot = await getDocs(collection(db, 'users', id, 'diaries'));
+
+      setDiaries(querySnapshot.docs.map(doc => {
+        return {
+          ...doc.data() as TravelDiaryResponse,
+          diaryId: doc.id,
+        };
+      }));
+    };
+
     getDiaries();
   }, []);
 
@@ -39,7 +37,7 @@ export const ListTravelDiary = () => {
         <div className="mt-12 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {
             diaries.map((items, key) => (
-              <Link to={`/home/diary-travels/${items.diaryId}`} key={key}>
+              <Link to={`/home/diary-travels/${items.diaryId}`} key={items.diaryId}>
                 <article className="bg-white w-full max-w-md mx-auto mt-4 shadow-lg border rounded-md duration-300 hover:shadow-sm" key={key}>
 
                   <img src={hasImages(items.images) ? items.images[0] : imageLocalDefault} loading="lazy" alt={`Fotos de ${items.destination}`} className="w-full h-48 rounded-t-md" />

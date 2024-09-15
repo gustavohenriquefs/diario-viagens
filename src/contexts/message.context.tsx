@@ -24,7 +24,6 @@ interface TravelDiaryToastContextProps {
 const TravelDiaryToastContext = createContext<TravelDiaryToastContextProps>({ showToast: () => {} });
 
 export const TravelDiaryToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
- console.log('TravelDiaryToastProvider');
   return (
     <TravelDiaryToastContext.Provider value={travelDiaryToast()}>
       {children}

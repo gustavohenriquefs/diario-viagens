@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import { getDownloadURL, ref, StorageReference, uploadBytesResumable } from 'firebase/storage';
 import { storage, auth } from '../firebase';
-import { updateProfile } from 'firebase/auth';
+import { updateProfile, User } from 'firebase/auth';
 import { Upload } from '@phosphor-icons/react/dist/ssr';
 import { travelDiaryToast } from '../contexts/message.context';
 
@@ -28,8 +28,9 @@ export const Setting: React.FC = () => {
 
   const handleSubmit = () => {
     if (!selectedImage || !user) return;
-    
+
     setUploading(true);
+    
     const storageRef = ref(storage, `profileImages/${user.uid}`);
     const uploadTask = uploadBytesResumable(storageRef, selectedImage);
 
@@ -39,25 +40,27 @@ export const Setting: React.FC = () => {
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         console.log('Upload is ' + progress + '% done');
       },
-      (error) => {
+      () => {
         showToast('Não foi possível realizar upload! Verifique as informações e tente novamente mais tarde.', 'error');
         setUploading(false);
       },
       () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          updateProfile(user, { photoURL: downloadURL })
-            .then(() => {
-              setUploading(false);
-              showToast('Perfil atualizado com sucesso!', 'success');
-            })
-            .catch((error) => {
-              showToast('Não foi possível realizar upload! Verifique as informações e tente novamente mais tarde.', 'error');
-              setUploading(false);
-            });
-        });
-      }
-    );
+        updateUserProfile(user, uploadTask.snapshot.ref)
+          .then(() => {
+            setUploading(false);
+            showToast('Perfil atualizado com sucesso!', 'success');
+          })
+          .catch(() => {
+            showToast('Não foi possível realizar upload! Verifique as informações e tente novamente mais tarde.', 'error');
+            setUploading(false);
+          });
+      });
   };
+
+  const updateUserProfile = async (user: User, ref: StorageReference) => {
+    const downloadURL = await getDownloadURL(ref);
+    updateProfile(user, { photoURL: downloadURL })
+  }
 
   return (
     <div className="flex flex-col items-center">

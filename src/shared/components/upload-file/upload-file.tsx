@@ -40,22 +40,7 @@ export const UploadFile = forwardRef<HTMLInputElement, UploadFileProps>(({ class
     })) ?? [];
 
     setPreviews(initialPreviews);
-    console.log('Previews', initialPreviews);
   }, [files]);
-
-  // const handleUpload = async () => {
-  //   if (previews.length > 0) {
-  //     for (const preview of previews) {
-  //       const fileRef = storageRef(storage, `uploads/${preview.file.name}`);
-  //       try {
-  //         await uploadBytes(fileRef, preview.file);
-  //         console.log('Arquivo upado com sucesso:', preview.file.name);
-  //       } catch (error) {
-  //         console.error('Erro ao upar o arquivo:', preview.file.name, error);
-  //       }
-  //     }
-  //   }
-  // };
 
   return (
     <div className="flex flex-col items-center justify-center w-full space-y-4">
@@ -78,7 +63,7 @@ export const UploadFile = forwardRef<HTMLInputElement, UploadFileProps>(({ class
           {previews.length > 0 && (
             <div className="flex space-x-4">
               {previews.map((preview, index) => (
-                <div key={index} className="relative">
+                <div key={preview.url} className="relative">
                   <img src={preview.url} alt={`Foto do local`} className="w-32 h-32 object-cover rounded-lg" />
                   <button
                     type="button"

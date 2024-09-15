@@ -7,10 +7,11 @@ interface SearchProps extends InputHTMLAttributes<HTMLInputElement> {
   showDropdown?: boolean;
   setSelectedOption: (option?: SearchOption) => void;
   initialValue?: string;
+  resetValue?: string;
 }
 
 export const Search = forwardRef<HTMLInputElement, SearchProps>(
-  ({ options, setSelectedOption = () => { }, initialValue, ...props }, ref) => {
+  ({ options, setSelectedOption = () => { }, initialValue, resetValue, ...props }, ref) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [value, setValue] = useState('');
     const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
@@ -62,6 +63,12 @@ export const Search = forwardRef<HTMLInputElement, SearchProps>(
       }
     }, [initialValue]);
 
+    useEffect(() => {
+      if (!resetValue || resetValue === '') {
+        setValue('');
+      }
+    }, [resetValue]);
+
     return (
       <div className="relative w-100" ref={wrapperRef}>
         <label htmlFor="search" className="sr-only">Search</label>
@@ -77,7 +84,7 @@ export const Search = forwardRef<HTMLInputElement, SearchProps>(
             onKeyDown={handleKeyDown}
             autoComplete='off'
             required
-            ref={ref} // Ref forwarding
+            ref={ref}
             {...props}
           />
           <div
@@ -90,14 +97,18 @@ export const Search = forwardRef<HTMLInputElement, SearchProps>(
           <ul className="absolute z-30 w-full mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-auto dark:border-gray-600">
             {(options && options.length > 0) ? (
               options.map((option, index) => (
-                <li
+                <button
                   key={option.id}
-                  className={`p-2 cursor-pointer ${highlightedIndex === index ? 'bg-steel-blue-100' : 'bg-steel-blue-50'
-                    }`}
+                  className={`w-full p-2 cursor-pointer bg-steel-blue-50 hover:bg-steel-blue-100`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      handleSelectOption(option);
+                    }
+                  }}
                   onClick={() => handleSelectOption(option)}
                 >
                   {option.name}
-                </li>
+                </button>
               ))
             ) : (
               <li className="p-2 text-gray-500 dark:text-gray-400">No results found</li>

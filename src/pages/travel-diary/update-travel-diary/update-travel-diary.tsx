@@ -70,8 +70,6 @@ export const UpdateTravelDiary: React.FC = () => {
           note: data.note,
         }
 
-        console.log('TravelDiary', travelDiary);
-
         setDiary(travelDiary);
       } else {
         showToast('Diário de viagem não encontrado', 'error');
