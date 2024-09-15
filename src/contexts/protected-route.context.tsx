@@ -11,8 +11,6 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { user } = useAuth();
   const [authReady, setAuthReady] = useState(false);
-  console.log('ProtectedRoute -> user', user);
-  console.log('Estamos na rota: ', window.location.pathname);
 
   useEffect(() => {
     auth.authStateReady().then(() => {

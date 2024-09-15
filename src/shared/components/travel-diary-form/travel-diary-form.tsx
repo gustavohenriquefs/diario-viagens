@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import debounce from 'lodash/debounce';
 import { useEffect, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, UseFormReset } from 'react-hook-form';
 import { z } from 'zod';
 import { travelDiaryToast } from '../../../contexts/message.context';
 import { ButtonPrimary } from '../../../shared/components/buttons/button-primary';
@@ -19,9 +19,10 @@ interface TravelDiaryFormProps {
   travelDiaryFormData?: TravelDiaryFormInputs;
   handleSubmitTravelDiary: (data: TravelDiaryFormInputs) => Promise<void>;
   schema: z.ZodObject<z.ZodRawShape>;
+  setResetForm?: (reset: UseFormReset<TravelDiaryFormInputs>) => void;
 }
 
-export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitTravelDiary, schema }: TravelDiaryFormProps) => {
+export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitTravelDiary, schema, setResetForm }: TravelDiaryFormProps) => {
   const [options, setOptions] = useState<SearchOption[] | undefined>();
   const { showToast } = travelDiaryToast();
 
@@ -78,18 +79,14 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitT
 
     setOptions(newOptions);
   };
-
+  
   const onSubmit = async (data: TravelDiaryFormInputs) => {
-    await handleSubmitTravelDiary(data).finally(() => {
-      reset();
-    });
+    setResetForm?.(reset);
+  
+    await handleSubmitTravelDiary(data);
   }
 
   const debounceSearch = debounce(handleDestinationChange, 200);
-
-  useEffect(() => {
-    console.log(errors)
-  })
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full m-auto mt-16 mb-6 max-w-lg px-2">
@@ -148,6 +145,7 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitT
                 }}
                 initialValue={field.value}
                 options={options}
+                resetValue={field.value}
                 setSelectedOption={(option) => {
                   field.onChange(option?.name);
                 }}

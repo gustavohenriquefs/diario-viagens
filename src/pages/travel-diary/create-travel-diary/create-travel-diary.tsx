@@ -8,6 +8,8 @@ import { travelDiaryToast } from "../../../contexts/message.context";
 import { db, storage } from '../../../firebase';
 import { TravelDiaryFormInputs } from "../../../shared/components/travel-diary-form/interfaces/TravelDiaryFormInputs";
 import { TravelDiaryForm } from '../../../shared/components/travel-diary-form/travel-diary-form';
+import { useState } from "react";
+import { UseFormReset } from "react-hook-form";
 
 const dateSchema = z.object({
   start: z.date().refine((value) => value !== null, {
@@ -15,17 +17,19 @@ const dateSchema = z.object({
   }),
   end: z.date().optional(),
 });
- 
+
 const schema = z.object({
   diaryId: z.string().optional(),
   images: z.array(z.any()).min(1, { message: "Imagens são obrigatórias" }).max(10, { message: "Máximo de 10 imagens" }),
   destination: z.string().min(1, { message: "Destino é obrigatório" }),
-  date:  dateSchema.nullable(),
+  date: dateSchema.nullable(),
   note: z.string().min(5, { message: "Nota deve ter no mínimo 5 caracteres" }),
 });
 
 export const CreateTravelDiary = () => {
   const { showToast } = travelDiaryToast();
+  const [resetForm, setResetForm] = useState<UseFormReset<TravelDiaryFormInputs> | undefined>();
+
   const uid = useAuth()?.user?.uid;
 
   const uploadImages = async (images: File[], uid: string): Promise<string[]> => {
@@ -64,6 +68,8 @@ export const CreateTravelDiary = () => {
 
       const urls = await uploadImages(data.images, uid);
 
+      data.date.end = data.date.start ?? null;
+
       const reqBody = {
         ...data,
         images: urls,
@@ -72,12 +78,19 @@ export const CreateTravelDiary = () => {
       await addDoc(travelDiaryRef, reqBody);
 
       showToast('Diário de viagem criado com sucesso', 'success');
+
+      resetForm?.();
     } catch (error) {
       showToast('Não foi possível criar o diário de viagem', 'error');
     }
   };
 
+
   return (
-    <TravelDiaryForm handleSubmitTravelDiary={handleSubmitTravelDiary} schema={schema} />
+    <TravelDiaryForm
+      handleSubmitTravelDiary={handleSubmitTravelDiary}
+      schema={schema}
+      setResetForm={setResetForm}
+    />
   );
 };
