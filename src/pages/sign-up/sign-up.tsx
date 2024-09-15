@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import { GoogleLogo, Link } from '@phosphor-icons/react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -7,6 +6,9 @@ import { ButtonPrimary } from '../../shared/components/buttons/button-primary';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { travelDiaryToast } from '../../contexts/message.context';
+import { Input } from '../../shared/components/inputs/input';
+import { Link } from 'react-router-dom';
+import { AirplaneTakeoff } from '@phosphor-icons/react';
 
 const schema = z.object({
   name: z.string().min(3, { message: 'Name must have at least 3 characters' }),
@@ -42,12 +44,14 @@ export const SignUp: FC = () => {
     <main className="w-full h-screen flex flex-col items-center justify-center bg-gray-50 sm:px-4">
       <div className="w-full space-y-6 text-gray-600 sm:max-w-md">
         <div className="text-center">
-          <img src="https://floatui.com/logo.svg" alt="Logo" width={150} className="mx-auto" />
           <div className="mt-5 space-y-2">
+            <div className="flex justify-center text-steel-blue-700">
+              <AirplaneTakeoff size={64} />
+            </div>
             <h3 className="text-gray-800 text-2xl font-bold sm:text-3xl">Criar nova conta</h3>
-            <p>
-              Já tem uma conta?{' '}
-              <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <p className='flex items-center gap-2'>
+              Já tem uma conta?
+              <Link to="/login" className="cursor-pointer font-medium text-indigo-600 hover:text-indigo-500">
                 Log in
               </Link>
             </p>
@@ -59,11 +63,11 @@ export const SignUp: FC = () => {
               <label htmlFor="name" className="font-medium">
                 Name
               </label>
-              <input
+              <Input
                 type="text"
                 id="name"
                 required
-                className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
+                className="w-full"
                 {...register('name')}
               />
             </div>
@@ -71,41 +75,32 @@ export const SignUp: FC = () => {
               <label htmlFor="email" className="font-medium">
                 Email
               </label>
-              <input
+              <Input
                 type="email"
                 id="email"
                 required
-                className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
+                className="w-full"
                 {...register('email')}
               />
             </div>
             <div>
               <label htmlFor="password" className="font-medium">
-                Password
+                Senha
               </label>
-              <input
+              <Input
                 type="password"
                 id="password"
                 required
                 {...register('password')}
-                className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
+                className="w-full"
               />
             </div>
+
             <ButtonPrimary
               label="Criar conta"
               type="submit"
-              className="w-full px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150"
             />
           </form>
-          <div className="mt-5">
-            <button
-              type="button"
-              className="w-full flex items-center justify-center gap-x-3 py-2.5 mt-5 border rounded-lg text-sm font-medium hover:bg-gray-50 duration-150 active:bg-gray-100"
-            >
-              <GoogleLogo size={24} weight="bold" />
-              Continue with Google
-            </button>
-          </div>
         </div>
       </div>
     </main>
