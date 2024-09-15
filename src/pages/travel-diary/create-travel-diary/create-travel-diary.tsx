@@ -24,7 +24,6 @@ const schema = z.object({
   note: z.string().min(5, { message: "Nota deve ter no mínimo 5 caracteres" }),
 });
 
-
 export const CreateTravelDiary = () => {
   const { showToast } = travelDiaryToast();
   const uid = useAuth()?.user?.uid;
@@ -73,8 +72,6 @@ export const CreateTravelDiary = () => {
       await addDoc(travelDiaryRef, reqBody);
 
       showToast('Diário de viagem criado com sucesso', 'success');
-
-      // resetForm();
     } catch (error) {
       showToast('Não foi possível criar o diário de viagem', 'error');
     }

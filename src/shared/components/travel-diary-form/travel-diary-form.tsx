@@ -38,8 +38,6 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitT
   }
 
   useEffect(() => {
-    console.log('TravelDiaryForm -> travelDiaryFormData', travelDiaryFormData);
-
     if (travelDiaryFormData) {
       setValue('date', convertDateRange(travelDiaryFormData.date));
       setValue('destination', travelDiaryFormData.destination || '');

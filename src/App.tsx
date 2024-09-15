@@ -12,6 +12,7 @@ import { CreateTravelDiary } from './pages/travel-diary/create-travel-diary/crea
 import { ListTravelDiary } from './pages/travel-diary/list-travel-diary/list-travel-diary';
 import { UpdateTravelDiary } from './pages/travel-diary/update-travel-diary/update-travel-diary';
 import { Setting } from './settings/settings';
+import { ChangePasswordForm } from './pages/change-password/change-password';
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
       {
         path: 'diary-travels/new',
         element: <CreateTravelDiary />
+      },
+      {
+        path: 'change-password',
+        element: <ChangePasswordForm /> 
       },
       {
         path: '',

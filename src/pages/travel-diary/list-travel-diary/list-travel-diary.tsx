@@ -25,16 +25,7 @@ export const ListTravelDiary = () => {
 
   useEffect(() => {
     getDiaries();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // const formatDate = (date: Date | null) => {
-  //   if (!date) {
-  //     return '';
-  //   }
-
-  //   return new Intl.DateTimeFormat('pt-BR').format(date);
-  // }
 
   const hasImages = (images: string[]) => {
     return images && images.length > 0;
@@ -49,7 +40,6 @@ export const ListTravelDiary = () => {
           {
             diaries.map((items, key) => (
               <Link to={`/home/diary-travels/${items.diaryId}`} key={key}>
-                {(items.diaryId)}
                 <article className="bg-white w-full max-w-md mx-auto mt-4 shadow-lg border rounded-md duration-300 hover:shadow-sm" key={key}>
 
                   <img src={hasImages(items.images) ? items.images[0] : imageLocalDefault} loading="lazy" alt={`Fotos de ${items.destination}`} className="w-full h-48 rounded-t-md" />

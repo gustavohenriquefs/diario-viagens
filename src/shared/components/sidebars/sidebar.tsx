@@ -1,6 +1,6 @@
 import { AirplaneTakeoff } from "@phosphor-icons/react/dist/ssr";
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { travelDiaryToast } from "../../../contexts/message.context";
 import { useSidebar } from "../../../contexts/sidebar.context";
 import { auth } from "../../../firebase";
@@ -11,6 +11,7 @@ import { Modal } from "../modal/modal";
 export const Sidebar = () => {
   const { isSidebarOpen } = useSidebar();
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const getUserProfilePictureUrl = (username?: string | null) => {
     const randomPictureUrl = `https://ui-avatars.com/api/?name=${username}&background=random`;
@@ -63,7 +64,7 @@ export const Sidebar = () => {
   }
 
   const handleSettings = () => {
-    return <Navigate to='/settings' />;
+    navigate('/home/change-password');
   }
 
   const navsFooter = [
