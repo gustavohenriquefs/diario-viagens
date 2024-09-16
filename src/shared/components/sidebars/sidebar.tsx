@@ -86,7 +86,7 @@ export const Sidebar = () => {
 
   return (
     <nav
-      className="fixed top-0 left-0 w-auto z-50 h-full border-r bg-white space-y-8 sm:w-auto">
+      className="fixed top-0 left-0 w-auto z-50 h-full border-r bg-white sm:w-auto">
       <div className="flex flex-col h-full">
         <div className='h-20 flex items-center px-2'>
           {

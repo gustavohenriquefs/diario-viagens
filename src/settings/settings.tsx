@@ -4,6 +4,7 @@ import { storage, auth } from '../firebase';
 import { updateProfile, User } from 'firebase/auth';
 import { Upload } from '@phosphor-icons/react/dist/ssr';
 import { travelDiaryToast } from '../contexts/message.context';
+import { ButtonPrimary } from '../shared/components/buttons/button-primary';
 
 export const Setting: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -30,7 +31,7 @@ export const Setting: React.FC = () => {
     if (!selectedImage || !user) return;
 
     setUploading(true);
-    
+
     const storageRef = ref(storage, `profileImages/${user.uid}`);
     const uploadTask = uploadBytesResumable(storageRef, selectedImage);
 
@@ -99,14 +100,11 @@ export const Setting: React.FC = () => {
         </label>
       </div>
 
-      <button
+      <ButtonPrimary
         onClick={handleSubmit}
-        className={`bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition ${uploading ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
         disabled={uploading}
-      >
-        {uploading ? 'Uploading...' : 'Salvar imagem'}
-      </button>
+        label={uploading ? 'Uploading...' : 'Salvar imagem'}
+      />
     </div>
   );
 };
