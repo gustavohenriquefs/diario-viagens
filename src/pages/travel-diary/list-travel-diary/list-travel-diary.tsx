@@ -8,7 +8,6 @@ import imageLocalDefault from '../../../shared/images/no-image.svg';
 export const ListTravelDiary = () => {
   const [diaries, setDiaries] = useState<TravelDiaryResponse[]>([]);
 
-  
   useEffect(() => {
     const getDiaries = async () => {
       const id = auth.currentUser?.uid ?? '';
@@ -30,11 +29,11 @@ export const ListTravelDiary = () => {
   }
 
   return (
-    <section className="px-2">
+    <section className="px-4 mt-4">
       <h1 className="text-xl">Minhas viagens</h1>
 
-      <ul className="px-2">
-        <div className="mt-12 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      <ul>
+        <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {
             diaries.map((items, key) => (
               <Link to={`/home/diary-travels/${items.diaryId}`} key={items.diaryId}>

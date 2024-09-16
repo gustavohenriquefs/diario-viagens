@@ -86,6 +86,7 @@ export const SignUp: FC = () => {
             <div>
               <label htmlFor="password" className="font-medium">
                 Senha
+                Senha
               </label>
               <Input
                 type="password"
@@ -95,6 +96,7 @@ export const SignUp: FC = () => {
                 className="w-full"
               />
             </div>
+
 
             <ButtonPrimary
               label="Criar conta"
