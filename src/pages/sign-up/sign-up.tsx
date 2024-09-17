@@ -68,6 +68,7 @@ export const SignUp: FC = () => {
                 id="name"
                 required
                 className="w-full"
+                className="w-full"
                 {...register('name')}
               />
             </div>
@@ -76,9 +77,11 @@ export const SignUp: FC = () => {
                 Email
               </label>
               <Input
+              <Input
                 type="email"
                 id="email"
                 required
+                className="w-full"
                 className="w-full"
                 {...register('email')}
               />
@@ -89,10 +92,12 @@ export const SignUp: FC = () => {
                 Senha
               </label>
               <Input
+              <Input
                 type="password"
                 id="password"
                 required
                 {...register('password')}
+                className="w-full"
                 className="w-full"
               />
             </div>
