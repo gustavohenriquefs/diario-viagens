@@ -1,8 +1,11 @@
 export interface TravelDiaryFormInputs {
-  diaryId?: string;
-  imagens: File[];
+  diaryId: string | null;
+  images: File[];
   destination: string;
-  date: Date | null;
+  date: {
+    start: Date | null;
+    end: Date | null;
+  };
   note: string;
   createAt?: Date;
 }

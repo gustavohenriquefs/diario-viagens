@@ -1,31 +1,60 @@
 import { collection, getDocs } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { auth, db } from "../../../firebase";
-
-interface Diary {
-  title: string;
-  description: string;
-  startDate: Date;
-  endDate: Date;
-}
+import { TravelDiaryResponse } from "../../../shared/components/travel-diary-form/interfaces/travel-diary-response";
+import imageLocalDefault from '../../../shared/images/no-image.svg';
 
 export const ListTravelDiary = () => {
+  const [diaries, setDiaries] = useState<TravelDiaryResponse[]>([]);
 
-  // const [diaries, setDiaries] = useState([]);
+  useEffect(() => {
+    const getDiaries = async () => {
+      const id = auth.currentUser?.uid ?? '';
+      const querySnapshot = await getDocs(collection(db, 'users', id, 'diaries'));
 
-  const getMyDiariesTravels = async () => {
-    const uid = auth.currentUser?.uid;
-    const diariesRef = collection(db, `users/${uid}/diaries`);
+      setDiaries(querySnapshot.docs.map(doc => {
+        return {
+          ...doc.data() as TravelDiaryResponse,
+          diaryId: doc.id,
+        };
+      }));
+    };
 
-    const diariesSnapshot = await getDocs(diariesRef);
-    
-    return diariesSnapshot.docs.map((doc) => doc.data());
+    getDiaries();
+  }, []);
+
+  const hasImages = (images: string[]) => {
+    return images && images.length > 0;
   }
 
   return (
-    <div>
-      <h1>Minhas viagens</h1>
+    <section className="px-4 mt-4">
+      <h1 className="text-xl">Minhas viagens</h1>
 
+      <ul>
+        <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            diaries.map((items, key) => (
+              <Link to={`/home/diary-travels/${items.diaryId}`} key={items.diaryId}>
+                <article className="bg-white w-full max-w-md mx-auto mt-4 shadow-lg border rounded-md duration-300 hover:shadow-sm" key={key}>
 
-    </div>
+                  <img src={hasImages(items.images) ? items.images[0] : imageLocalDefault} loading="lazy" alt={`Fotos de ${items.destination}`} className="w-full h-48 rounded-t-md" />
+
+                  <div className="pt-3 ml-4 mr-2 mb-3">
+                    <h3 className="text-lg text-gray-900">
+                      {items.destination}
+                    </h3>
+                    <p className="text-gray-400 text-sm mt-1">{items.note}</p>
+                  </div>
+
+                </article>
+              </Link>
+            ))
+          }
+        </div>
+      </ul>
+
+    </section>
   )
 };
