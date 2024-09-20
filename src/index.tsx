@@ -4,6 +4,10 @@ import App from './App';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 
+<div>
+<script src="./node_modules/lodash/lodash.min.js"></script>
+<script src="./node_modules/dropzone/dist/dropzone-min.js"></script>
+</div>
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

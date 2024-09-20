@@ -106,7 +106,7 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitT
 
       <div className="flex flex-wrap -mx-3 mb-6 px-4">
         <label htmlFor='fotos' className="block text-gray-700 text-xs font-bold mb-2">
-          Fotos
+        
         </label>
 
         <Controller
