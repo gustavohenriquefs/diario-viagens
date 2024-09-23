@@ -18,12 +18,3 @@ export const auth = getAuth(app);
 export const firestore = getFirestore(app);
 export const storage = getStorage(app);
 export const db = getFirestore(app);
-
-// Conectar ao emulador do Firestore
-try {
-  connectFirestoreEmulator(db, 'localhost', 8080);
-  connectStorageEmulator(storage, 'localhost', 9199);
-  console.log('Conectado ao emulador do Firestore');
-} catch (error) {
-  console.error('Erro ao conectar ao emulador do Firestore:', error);
-}

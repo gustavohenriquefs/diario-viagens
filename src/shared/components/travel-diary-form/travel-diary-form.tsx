@@ -98,13 +98,13 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitT
           {...register("diaryId")}
           type="text"
           id="diaryId"
-          className="block px-3 py-2 w-full text-sm text-gray-900 bg-gray-50 rounded border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+          className="block border-dashed px-3 py-2 w-full text-sm text-gray-900 bg-gray-50 rounded border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
           placeholder="ID"
           readOnly
         />
       </div> : null}
 
-      <div className="flex flex-wrap -mx-3 mb-6 px-4">
+      <div className="flex flex-wrap -mx-3 mb-6 ">
         <label htmlFor='fotos' className="block text-gray-700 text-xs font-bold mb-2">
         
         </label>

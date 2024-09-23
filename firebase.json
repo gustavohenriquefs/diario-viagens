@@ -1,7 +1,17 @@
 {
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
   "emulators": {
     "firestore": {
       "port": 8080
+    },
+    "database": {
+      "port": 9000
     },
     "storage": {
       "port": 9199
@@ -10,12 +20,5 @@
       "enabled": true
     },
     "singleProjectMode": true
-  },
-  "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  },
-  "storage": {
-    "rules": "storage.rules"
   }
 }

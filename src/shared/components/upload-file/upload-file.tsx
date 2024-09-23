@@ -44,12 +44,12 @@ export const UploadFile = forwardRef<HTMLInputElement, UploadFileProps>(
         file,
       }));
       setPreviews(initialPreviews);
-    }, [files]);
+    }, []);
 
     return (
-      <div className={classNameContainer}> 
+      <div className={classNameContainer + ' w-full'}> 
         <div
-          className="cursor-pointer p-28 flex justify-center bg-white border border-dashed border-gray-300 rounded-xl dark:bg-neutral-800 dark:border-neutral-600"
+          className="cursor-pointer p-28 flex justify-center bg-white border border-gray-300 rounded-xl"
           onClick={handleClick}
         >
           <input
@@ -61,7 +61,7 @@ export const UploadFile = forwardRef<HTMLInputElement, UploadFileProps>(
             {...props}
           />
           <div className="text-center">
-            <span className="inline-flex justify-center items-center w-8 h-8 bg-gray-100 text-gray-800 rounded-full dark:bg-neutral-700 dark:text-neutral-200">
+            <span className="inline-flex justify-center items-center w-8 h-8 bg-gray-100 text-gray-800 rounded-full">
               <svg
                 className="shrink-0"
                 xmlns="http://www.w3.org/2000/svg"
@@ -80,12 +80,12 @@ export const UploadFile = forwardRef<HTMLInputElement, UploadFileProps>(
               </svg>
             </span>
             <div className="mt-4 flex flex-wrap justify-center text-sm leading-6 text-gray-600">
-              <span className="pe-1 font-medium text-gray-800 dark:text-neutral-200">Arraste suas imagens aqui ou</span>
-              <span className="bg-white font-semibold text-blue-600 hover:text-blue-700 rounded-lg decoration-2 hover:underline dark:bg-neutral-800 dark:text-blue-500">
+              <span className="pe-1 font-medium text-gray-800">Arraste suas imagens aqui ou</span>
+              <span className="bg-white font-semibold text-blue-600 hover:text-blue-700 rounded-lg decoration-2 hover:underline">
                 browse
               </span>
             </div>
-            <p className="mt-1 text-xs text-gray-400 dark:text-neutral-400">Escolha até 4 imagens.</p>
+            <p className="mt-1 text-xs text-gray-400">Escolha até 4 imagens.</p>
           </div>
         </div>
 
@@ -93,18 +93,18 @@ export const UploadFile = forwardRef<HTMLInputElement, UploadFileProps>(
           {previews.map((preview, index) => (
             <div
               key={index}
-              className="p-3 bg-white border border-solid border-gray-300 rounded-xl dark:bg-neutral-800 dark:border-neutral-600 flex justify-between items-center"
+              className="p-3 bg-white border border-solid border-gray-300 rounded-xl flex justify-between items-center"
             >
               <div className="flex items-center gap-x-3">
                 <img className="rounded-lg w-16 h-16 object-cover" src={preview.url} alt={`Preview ${index}`} />
                 <div>
-                  <p className="text-sm font-medium text-gray-800 dark:text-white">{preview.file.name}</p>
-                  <p className="text-xs text-gray-500 dark:text-neutral-500">{Math.round(preview.file.size / 1024)} KB</p>
+                  <p className="text-sm font-medium text-gray-800">{preview.file.name}</p>
+                  <p className="text-xs text-gray-500">{Math.round(preview.file.size / 1024)} KB</p>
                 </div>
               </div>
               <button
                 type="button"
-                className="text-gray-500 hover:text-gray-800 dark:text-neutral-500 dark:hover:text-neutral-200"
+                className="text-gray-500 hover:text-gray-800"
                 onClick={() => handleRemovePreview(index)}
               >
                 <svg

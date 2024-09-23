@@ -59,7 +59,7 @@ export const Login: React.FC = () => {
             <AirplaneTakeoff size={64} />
           </span>
           <div className="mt-5 space-y-2">
-            <h3 className="text-gray-800 text-2xl font-bold sm:text-3xl">Log in to your account</h3>
+            <h3 className="text-gray-800 text-2xl font-bold sm:text-3xl">Entrar no sistema</h3>
             <p className="">Não tem uma conta? <Link to="/sign-up" className="font-medium text-steel-blue-700 hover:text-steel-blue-900">Sign up</Link></p>
           </div>
         </div>

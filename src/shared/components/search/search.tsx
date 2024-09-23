@@ -111,7 +111,7 @@ export const Search = forwardRef<HTMLInputElement, SearchProps>(
                 </button>
               ))
             ) : (
-              <li className="p-2 text-gray-500 dark:text-gray-400">No results found</li>
+              <li className="p-2 text-gray-500">Sem resultados</li>
             )}
           </ul>
         )}
