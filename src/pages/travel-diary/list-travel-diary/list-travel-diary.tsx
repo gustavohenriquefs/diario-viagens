@@ -32,6 +32,9 @@ const ModalConfirmationContent = ({ message, onConfirm, handleCloseModal }: {
 export const ListTravelDiary = () => {
   const [diaries, setDiaries] = useState<TravelDiaryResponse[]>([]);
   const { showToast } = travelDiaryToast();
+  const [isOpenPopup, setIsOpenPopup] = useState(false);
+  const [selectedCardId, setSelectedCardId] = useState<string | undefined>();
+  const [trashIsFilled, setTrashIsFilled] = useState<boolean>(false);
 
   useEffect(() => {
     const getDiaries = async () => {
@@ -73,8 +76,6 @@ export const ListTravelDiary = () => {
     setIsOpenPopup(false);
   }
 
-  const [isOpenPopup, setIsOpenPopup] = useState(false);
-  const [selectedCardId, setSelectedCardId] = useState<string | undefined>();
 
   const handleDeleteDiary = (diaryId: string) => async (event: React.MouseEvent<SVGSVGElement>) => {
     event.preventDefault();
@@ -93,10 +94,13 @@ export const ListTravelDiary = () => {
               <Link to={`/home/diary-travels/${items.diaryId}`} key={items.diaryId}>
                 <article className="relative bg-white w-full max-w-md mx-auto mt-4 shadow-lg border rounded-md duration-300 hover:shadow-sm" key={key}>
                   <Trash
+                    weight={trashIsFilled ? 'fill' : 'bold'}
+                    onMouseEnter={() => setTrashIsFilled(true)}
+                    onMouseLeave={() => setTrashIsFilled(false)}
                     className="absolute top-2 right-2 text-red-500 cursor-pointer hover:text-red-700"
                     onClick={handleDeleteDiary(items.diaryId)}
                   />
-                  
+
                   <img src={hasImages(items.images) ? items.images[0] : imageLocalDefault} loading="lazy" alt={`Fotos de ${items.destination}`} className="w-full h-48 rounded-t-md" />
 
                   <div className="pt-3 ml-4 mr-2 mb-3">

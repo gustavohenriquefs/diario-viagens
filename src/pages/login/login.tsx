@@ -9,6 +9,7 @@ import { useAuth } from '../../contexts/auth.context';
 import { auth } from '../../firebase';
 import { ButtonPrimary } from '../../shared/components/buttons/button-primary';
 import { Input } from '../../shared/components/inputs/input';
+import { travelDiaryToast } from '../../contexts/message.context';
 
 interface LoginInputs {
   email: string;
@@ -23,6 +24,8 @@ const schema = z.object({
 export const Login: React.FC = () => {
   const navigate = useNavigate();
   const { user, setUser, setToken } = useAuth();
+  const {showToast} = travelDiaryToast();
+
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginInputs>({
     resolver: zodResolver(schema),
@@ -40,8 +43,13 @@ export const Login: React.FC = () => {
       })
       .catch((error) => {
         const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error(errorCode, errorMessage);
+
+        if(errorCode === 'auth/invalid-credential') {
+          showToast('Login inválido! Verifique suas credenciais.', 'error');
+          return;
+        }
+
+        showToast('Não foi possível realizar login! Tente novamente mais tarde', 'error');
       });
   };
 
