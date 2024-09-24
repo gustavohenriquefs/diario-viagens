@@ -151,6 +151,7 @@ export const UpdateTravelDiary: React.FC = () => {
         <Load />
       ) : (
         <TravelDiaryForm
+          formTitle="Atualizar Diário de Viagem"
           travelDiaryFormData={diary}
           handleSubmitTravelDiary={handleSubmitTravelDiary}
           schema={schema}

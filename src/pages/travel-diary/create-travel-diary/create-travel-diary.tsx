@@ -87,10 +87,13 @@ export const CreateTravelDiary = () => {
 
 
   return (
-    <TravelDiaryForm
-      handleSubmitTravelDiary={handleSubmitTravelDiary}
-      schema={schema}
-      setResetForm={setResetForm}
-    />
+    <section className="flex g-3 mt-4 justify-items-center">
+      <TravelDiaryForm
+        formTitle="Criar diário de viagem"
+        handleSubmitTravelDiary={handleSubmitTravelDiary}
+        schema={schema}
+        setResetForm={setResetForm}
+      />
+    </ section>
   );
 };

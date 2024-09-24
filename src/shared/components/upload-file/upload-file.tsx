@@ -47,7 +47,7 @@ export const UploadFile = forwardRef<HTMLInputElement, UploadFileProps>(
     }, []);
 
     return (
-      <div className={classNameContainer + ' w-full'}> 
+      <div className={classNameContainer + ' w-full'}>
         <div
           className="cursor-pointer p-28 flex justify-center bg-white border border-gray-300 rounded-xl"
           onClick={handleClick}
@@ -89,7 +89,7 @@ export const UploadFile = forwardRef<HTMLInputElement, UploadFileProps>(
           </div>
         </div>
 
-        <div className="mt-4 flex flex-col space-y-4">
+        {previews?.length > 0 ? <div className="mt-4 flex flex-col space-y-4">
           {previews.map((preview, index) => (
             <div
               key={index}
@@ -128,7 +128,8 @@ export const UploadFile = forwardRef<HTMLInputElement, UploadFileProps>(
               </button>
             </div>
           ))}
-        </div>
+        </div> : ''
+        }
       </div>
     );
   }

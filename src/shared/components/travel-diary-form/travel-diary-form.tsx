@@ -16,13 +16,14 @@ import { DateRangeForm } from '../datapicker/datapicker';
 const GEOUSERNAME = process.env.REACT_APP_GEOUSERNAME;
 
 interface TravelDiaryFormProps {
+  formTitle: string;
   travelDiaryFormData?: TravelDiaryFormInputs;
   handleSubmitTravelDiary: (data: TravelDiaryFormInputs) => Promise<void>;
   schema: z.ZodObject<z.ZodRawShape>;
   setResetForm?: (reset: UseFormReset<TravelDiaryFormInputs>) => void;
 }
 
-export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitTravelDiary, schema, setResetForm }: TravelDiaryFormProps) => {
+export const TravelDiaryForm = ({ formTitle, travelDiaryFormData = undefined, handleSubmitTravelDiary, schema, setResetForm }: TravelDiaryFormProps) => {
   const [options, setOptions] = useState<SearchOption[] | undefined>();
   const { showToast } = travelDiaryToast();
 
@@ -79,18 +80,22 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitT
 
     setOptions(newOptions);
   };
-  
+
   const onSubmit = async (data: TravelDiaryFormInputs) => {
     setResetForm?.(reset);
-  
+
     await handleSubmitTravelDiary(data);
   }
 
   const debounceSearch = debounce(handleDestinationChange, 200);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-full m-auto mt-16 mb-6 max-w-lg px-2">
-      {travelDiaryFormData?.diaryId ? <div className="flex flex-wrap -mx-2 mb-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full m-auto mb-3 max-w-lg px-4 mt-4">
+      <h1 className="flex justify-left text-2xl font-bold mb-4">
+        {formTitle}
+      </h1>
+
+      {travelDiaryFormData?.diaryId ? <div className="flex flex-wrap -mx-2 mb-6 px-3">
         <label htmlFor="diaryId" className="block text-gray-700 text-xs font-bold mb-2">
           ID
         </label>
@@ -104,9 +109,9 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitT
         />
       </div> : null}
 
-      <div className="flex flex-wrap -mx-3 mb-6 ">
+      <div className="flex flex-wrap -mx-3 mb-2 px-3">
         <label htmlFor='fotos' className="block text-gray-700 text-xs font-bold mb-2">
-        
+
         </label>
 
         <Controller
@@ -162,7 +167,7 @@ export const TravelDiaryForm = ({ travelDiaryFormData = undefined, handleSubmitT
           )}
         </div>
 
-        <div className='flex flex-wrap px-3 my-2'>
+        <div className='flex flex-wrap px-3 my-2 px-3'>
           <label className="block tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-destination">
             Data
           </label>
